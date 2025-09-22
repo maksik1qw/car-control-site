@@ -9,6 +9,11 @@
 </head>
 <body>
     <div class="container">
+        <!-- Уведомление -->
+        <div id="notification" class="notification hidden">
+            <span id="notification-text"></span>
+        </div>
+
         <!-- Заголовок -->
         <header class="header">
             <div class="status-indicator">
@@ -27,9 +32,9 @@
                     <h3>Состояние системы</h3>
                     <p class="status-text">Все системы в норме</p>
                     <div class="sensors">
-                        <span class="sensor">🔒 Замки: закрыты</span>
-                        <span class="sensor">🚗 Двигатель: выключен</span>
-                        <span class="sensor">🌡️ Температура: 22°C</span>
+                        <span class="sensor" id="lock-status">🔒 Замки: закрыты</span>
+                        <span class="sensor" id="engine-status">🚗 Двигатель: выключен</span>
+                        <span class="sensor" id="temp-status">🌡️ Температура: 22°C</span>
                     </div>
                 </div>
             </div>
