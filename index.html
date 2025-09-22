@@ -42,7 +42,7 @@
       justify-content: center;
       align-items: center;
       z-index: 1000;
-      transition: opacity 0.5s ease, transform 0.8s ease;
+      transition: opacity 0.8s ease, transform 0.8s ease;
     }
 
     .loading-screen.hidden {
@@ -69,10 +69,10 @@
 
     .speedometer-inner {
       position: absolute;
-      width: 90%;
-      height: 90%;
-      top: 5%;
-      left: 5%;
+      top: 15px;
+      left: 15px;
+      right: 15px;
+      bottom: 15px;
       background: var(--bg);
       border-radius: 50%;
       display: flex;
@@ -82,65 +82,89 @@
 
     .speedometer-needle {
       position: absolute;
-      width: 3px;
-      height: 100px;
-      background: linear-gradient(to top, #ff2d55, #ff9500);
-      bottom: 50%;
+      top: 50%;
       left: 50%;
-      transform-origin: bottom center;
+      width: 4px;
+      height: 100px;
+      background: #ff2d55;
+      transform-origin: 50% 0;
       transform: translateX(-50%) rotate(-120deg);
+      transition: transform 2.5s cubic-bezier(0.34, 1.56, 0.64, 1);
       border-radius: 4px;
       box-shadow: 0 0 20px rgba(255, 45, 85, 0.5);
-      transition: transform 2.5s cubic-bezier(0.25, 0.1, 0.25, 1);
     }
 
-    .speedometer-scale {
+    .speedometer-center {
       position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 20px;
+      height: 20px;
+      background: #ff2d55;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      box-shadow: 0 0 20px rgba(255, 45, 85, 0.8);
+    }
+
+    .speedometer-numbers {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
     }
 
-    .scale-mark {
+    .speed-number {
       position: absolute;
-      width: 2px;
-      height: 12px;
-      background: rgba(255, 255, 255, 0.3);
-      top: 10px;
-      left: 50%;
-      transform-origin: bottom center;
-    }
-
-    .scale-number {
-      position: absolute;
-      font-size: 12px;
+      font-size: 14px;
       font-weight: 600;
-      color: rgba(255, 255, 255, 0.6);
-      transform-origin: center;
-    }
-
-    .speed-value {
-      font-size: 48px;
-      font-weight: 800;
-      background: linear-gradient(90deg, #ff2d55, #ff9500);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      text-shadow: 0 0 20px rgba(255, 45, 85, 0.3);
-    }
-
-    .speed-unit {
-      font-size: 16px;
-      opacity: 0.7;
-      margin-top: -10px;
+      color: rgba(255, 255, 255, 0.7);
     }
 
     .loading-text {
       font-size: 18px;
-      opacity: 0.8;
+      font-weight: 600;
       letter-spacing: 2px;
       text-transform: uppercase;
-      margin-top: 20px;
-      animation: pulse 2s infinite;
+      margin-bottom: 20px;
+      opacity: 0.8;
+    }
+
+    .loading-progress {
+      width: 200px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 30px;
+    }
+
+    .loading-progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #ff2d55, #5856d6);
+      border-radius: 2px;
+      width: 0%;
+      transition: width 2.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .brand-logo {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      background: linear-gradient(90deg, #ff2d55, #5856d6, #34c759);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      margin-bottom: 10px;
+    }
+
+    .brand-subtitle {
+      font-size: 14px;
+      opacity: 0.6;
+      letter-spacing: 3px;
+      text-transform: uppercase;
     }
 
     .flash {
@@ -150,20 +174,26 @@
       width: 100%;
       height: 100%;
       background: white;
-      z-index: 9999;
+      z-index: 2000;
       opacity: 0;
       pointer-events: none;
     }
 
     .flash.active {
-      animation: flash 0.3s ease;
+      animation: flash 0.3s ease-out;
     }
 
-    /* Основное приложение */
+    @keyframes flash {
+      0% { opacity: 0; }
+      50% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    /* Стили основного приложения */
     .app-content {
       opacity: 0;
       transform: translateY(20px);
-      transition: all 0.8s ease;
+      transition: opacity 0.8s ease, transform 0.8s ease;
       padding: 24px 20px;
       min-height: 100vh;
     }
@@ -178,20 +208,20 @@
       margin: 0 auto;
     }
 
-    /* Анимация появления элементов приложения */
-    .app-content.visible > * {
+    /* Анимация появления элементов */
+    .container > * {
       opacity: 0;
       transform: translateY(20px);
       animation: fadeInUp 0.6s ease forwards;
     }
-    .app-content.visible .header { animation-delay: 0.2s; }
-    .app-content.visible .btn:nth-child(1) { animation-delay: 0.3s; }
-    .app-content.visible .btn:nth-child(2) { animation-delay: 0.4s; }
-    .app-content.visible .btn:nth-child(3) { animation-delay: 0.5s; }
-    .app-content.visible .btn:nth-child(4) { animation-delay: 0.6s; }
-    .app-content.visible .btn:nth-child(5) { animation-delay: 0.7s; }
-    .app-content.visible .status-card { animation-delay: 0.8s; }
-    .app-content.visible .footer { animation-delay: 0.9s; }
+    .header { animation-delay: 0.1s; }
+    .btn:nth-child(1) { animation-delay: 0.2s; }
+    .btn:nth-child(2) { animation-delay: 0.3s; }
+    .btn:nth-child(3) { animation-delay: 0.4s; }
+    .btn:nth-child(4) { animation-delay: 0.5s; }
+    .btn:nth-child(5) { animation-delay: 0.6s; }
+    .status-card { animation-delay: 0.7s; }
+    .footer { animation-delay: 0.8s; }
 
     @keyframes fadeInUp {
       to {
@@ -367,6 +397,7 @@
 
     .pulse {
       animation: pulse 1.5s infinite;
+      text-shadow: 0 0 20px rgba(255,255,255,0.8);
     }
 
     @keyframes pulse {
@@ -375,27 +406,18 @@
       100% { opacity: 1; transform: scale(1); }
     }
 
-    @keyframes flash {
-      0% { opacity: 0; }
-      50% { opacity: 0.8; }
-      100% { opacity: 0; }
-    }
-
     .glow {
       text-shadow: 0 0 10px rgba(94, 234, 212, 0.8);
     }
 
     /* Адаптивность */
     @media (max-width: 400px) {
+      .app-content {
+        padding: 16px 12px;
+      }
       .speedometer {
         width: 220px;
         height: 220px;
-      }
-      .speed-value {
-        font-size: 36px;
-      }
-      .app-content {
-        padding: 16px 12px;
       }
       .btn {
         padding: 18px 20px;
@@ -422,17 +444,19 @@
   <div class="loading-screen" id="loadingScreen">
     <div class="speedometer">
       <div class="speedometer-circle">
-        <div class="speedometer-scale" id="speedometerScale"></div>
+        <div class="speedometer-numbers" id="speedNumbers"></div>
         <div class="speedometer-needle" id="needle"></div>
-        <div class="speedometer-inner">
-          <div>
-            <div class="speed-value" id="speedValue">0</div>
-            <div class="speed-unit">km/h</div>
-          </div>
-        </div>
+        <div class="speedometer-center"></div>
+      </div>
+      <div class="speedometer-inner">
+        <div class="loading-text" id="loadingPercent">0%</div>
       </div>
     </div>
-    <div class="loading-text">TELEDRIVE BOOT</div>
+    <div class="loading-progress">
+      <div class="loading-progress-bar" id="progressBar"></div>
+    </div>
+    <div class="brand-logo">TELEDRIVE</div>
+    <div class="brand-subtitle">ULTIMATE EDITION</div>
   </div>
 
   <!-- Вспышка -->
@@ -495,96 +519,75 @@
     tg.ready();
     tg.setHeaderColor('secondary_bg_color');
 
-    // Создание шкалы спидометра
-    function createSpeedometerScale() {
-      const scale = document.getElementById('speedometerScale');
-      for (let i = 0; i <= 250; i += 10) {
-        const mark = document.createElement('div');
-        mark.className = 'scale-mark';
-        mark.style.transform = `translateX(-50%) rotate(${120 + (i / 250) * 240}deg)`;
+    // Создание цифр на спидометре
+    function createSpeedNumbers() {
+      const numbersContainer = document.getElementById('speedNumbers');
+      for (let i = 0; i <= 250; i += 50) {
+        const angle = (i / 250) * 240 - 120; // от -120° до 120°
+        const rad = angle * Math.PI / 180;
+        const x = 50 + 45 * Math.sin(rad);
+        const y = 50 - 45 * Math.cos(rad);
         
-        if (i % 50 === 0) {
-          mark.style.height = '20px';
-          mark.style.background = 'rgba(255, 255, 255, 0.6)';
-          
-          const number = document.createElement('div');
-          number.className = 'scale-number';
-          number.textContent = i;
-          number.style.transform = `rotate(${-(120 + (i / 250) * 240)}deg)`;
-          number.style.top = '35px';
-          number.style.left = '50%';
-          number.style.transform += ' translateX(-50%)';
-          scale.appendChild(number);
-        }
-        
-        scale.appendChild(mark);
+        const numberElement = document.createElement('div');
+        numberElement.className = 'speed-number';
+        numberElement.textContent = i;
+        numberElement.style.left = x + '%';
+        numberElement.style.top = y + '%';
+        numbersContainer.appendChild(numberElement);
       }
     }
 
-    // Анимация загрузки спидометра
+    // Анимация загрузки
     function startLoadingAnimation() {
       const needle = document.getElementById('needle');
-      const speedValue = document.getElementById('speedValue');
+      const progressBar = document.getElementById('progressBar');
+      const loadingPercent = document.getElementById('loadingPercent');
       const loadingScreen = document.getElementById('loadingScreen');
       const flash = document.getElementById('flash');
       const appContent = document.getElementById('appContent');
-      
-      let speed = 0;
-      const targetSpeed = 250;
+
+      let progress = 0;
       const duration = 2500; // 2.5 секунды
-      const interval = 20;
+      const interval = 50;
       const steps = duration / interval;
-      const increment = targetSpeed / steps;
-      
+      const progressStep = 100 / steps;
+      const angleStep = 240 / steps; // от -120° до 120°
+
       const timer = setInterval(() => {
-        speed += increment;
-        if (speed >= targetSpeed) {
-          speed = targetSpeed;
+        progress += progressStep;
+        const currentAngle = -120 + (progress / 100) * 240;
+        
+        // Обновляем элементы
+        needle.style.transform = `translateX(-50%) rotate(${currentAngle}deg)`;
+        progressBar.style.width = progress + '%';
+        loadingPercent.textContent = Math.min(100, Math.round(progress)) + '%';
+
+        if (progress >= 100) {
           clearInterval(timer);
           
-          // Завершение анимации
+          // Вспышка
+          flash.classList.add('active');
+          
           setTimeout(() => {
-            // Вспышка
-            flash.classList.add('active');
-            
+            // Скрываем экран загрузки и показываем приложение
+            loadingScreen.classList.add('hidden');
             setTimeout(() => {
-              // Скрываем экран загрузки и показываем приложение
-              loadingScreen.classList.add('hidden');
-              flash.classList.remove('active');
-              
-              setTimeout(() => {
-                appContent.classList.add('visible');
-              }, 300);
-              
+              appContent.classList.add('visible');
             }, 300);
-          }, 500);
+          }, 300);
         }
-        
-        // Обновляем положение стрелки и значение скорости
-        const rotation = -120 + (speed / targetSpeed) * 240;
-        needle.style.transform = `translateX(-50%) rotate(${rotation}deg)`;
-        speedValue.textContent = Math.round(speed);
-        
       }, interval);
     }
 
-    // Инициализация
-    document.addEventListener('DOMContentLoaded', () => {
-      createSpeedometerScale();
-      setTimeout(startLoadingAnimation, 500);
-    });
-
-    // Функции основного приложения
+    // Основные функции приложения
     function sendCommand(cmd, buttonElement) {
       buttonElement.disabled = true;
       buttonElement.classList.add('btn-loading');
-
       tg.sendData(cmd);
 
       setTimeout(() => {
         buttonElement.disabled = false;
         buttonElement.classList.remove('btn-loading');
-
         if (cmd === '/start' || cmd === '/status') {
           updateSensorData();
         }
@@ -609,6 +612,16 @@
         humiElement.innerText = Math.max(40, Math.min(80, currentHumi + (Math.random() - 0.5) * 10)).toFixed(0) + "%";
       }, 600);
     }
+
+    // Инициализация
+    document.addEventListener('DOMContentLoaded', () => {
+      createSpeedNumbers();
+      setTimeout(startLoadingAnimation, 500);
+    });
+
+    tg.onEvent('viewportChanged', (e) => {
+      console.log('Viewport changed:', e);
+    });
   </script>
 </body>
 </html>
