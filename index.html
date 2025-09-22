@@ -3,95 +3,252 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🚗 Управление сигнализацией</title>
+    <title>🚗 CarGuard Pro</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <!-- Уведомление -->
-        <div id="notification" class="notification hidden">
-            <span id="notification-text"></span>
-        </div>
-
-        <!-- Заголовок -->
-        <header class="header">
-            <div class="status-indicator">
-                <div class="status-dot active"></div>
-                <span>СИСТЕМА АКТИВНА</span>
+    <!-- Прелоадер -->
+    <div id="preloader" class="preloader">
+        <div class="preloader-content">
+            <div class="car-loader">🚗</div>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
             </div>
-            <h1>🚗 СИГНАЛИЗАЦИЯ АВТОМОБИЛЯ</h1>
-        </header>
+            <p>Загрузка системы безопасности...</p>
+        </div>
+    </div>
 
-        <!-- Основная панель управления -->
-        <main class="control-panel">
-            <!-- Статус автомобиля -->
-            <div class="car-status">
-                <div class="car-icon">🚗</div>
-                <div class="status-info">
-                    <h3>Состояние системы</h3>
-                    <p class="status-text">Все системы в норме</p>
-                    <div class="sensors">
-                        <span class="sensor" id="lock-status">🔒 Замки: закрыты</span>
-                        <span class="sensor" id="engine-status">🚗 Двигатель: выключен</span>
-                        <span class="sensor" id="temp-status">🌡️ Температура: 22°C</span>
+    <!-- Уведомление -->
+    <div id="notification" class="notification hidden">
+        <div class="notification-icon">✓</div>
+        <span id="notification-text"></span>
+        <div class="notification-progress"></div>
+    </div>
+
+    <div class="container">
+        <!-- Боковая панель -->
+        <aside class="sidebar">
+            <div class="user-info">
+                <div class="user-avatar">
+                    <span id="user-avatar">👤</span>
+                </div>
+                <div class="user-details">
+                    <h3 id="user-name">Водитель</h3>
+                    <p>Premium аккаунт</p>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-tab="control">
+                    <span class="nav-icon">🎮</span>
+                    Управление
+                </a>
+                <a href="#" class="nav-item" data-tab="stats">
+                    <span class="nav-icon">📊</span>
+                    Статистика
+                </a>
+                <a href="#" class="nav-item" data-tab="settings">
+                    <span class="nav-icon">⚙️</span>
+                    Настройки
+                </a>
+            </nav>
+
+            <div class="system-health">
+                <h4>Состояние системы</h4>
+                <div class="health-item">
+                    <span>Батарея</span>
+                    <div class="health-bar">
+                        <div class="health-progress" style="width: 87%"></div>
+                    </div>
+                    <span>87%</span>
+                </div>
+                <div class="health-item">
+                    <span>Сигнал</span>
+                    <div class="health-bar">
+                        <div class="health-progress" style="width: 95%"></div>
+                    </div>
+                    <span>95%</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Основной контент -->
+        <main class="main-content">
+            <!-- Заголовок с анимированным статусом -->
+            <header class="main-header">
+                <div class="header-content">
+                    <div class="title-section">
+                        <h1>CarGuard <span class="pro-badge">PRO</span></h1>
+                        <div class="status-pill active">
+                            <div class="pulse-dot"></div>
+                            Система активна
+                        </div>
+                    </div>
+                    <div class="header-stats">
+                        <div class="stat-card">
+                            <div class="stat-icon">🕒</div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="uptime">24д 16ч</span>
+                                <span class="stat-label">Активность</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📡</div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="signal">98%</span>
+                                <span class="stat-label">Сигнал</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </header>
 
-            <!-- Панель кнопок управления -->
-            <div class="controls-grid">
-                <button class="control-btn primary" onclick="sendCommand('start')">
-                    <span class="icon">🚀</span>
-                    <span class="text">Запуск двигателя</span>
-                    <span class="time">0.7 сек</span>
-                </button>
-
-                <button class="control-btn success" onclick="sendCommand('open')">
-                    <span class="icon">🔓</span>
-                    <span class="text">Открыть замок</span>
-                    <span class="time">0.3 сек</span>
-                </button>
-
-                <button class="control-btn warning" onclick="sendCommand('close')">
-                    <span class="icon">🔒</span>
-                    <span class="text">Закрыть замок</span>
-                    <span class="time">0.3 сек</span>
-                </button>
-
-                <button class="control-btn info" onclick="sendCommand('status')">
-                    <span class="icon">📊</span>
-                    <span class="text">Сигнал статуса</span>
-                    <span class="time">0.3 сек</span>
-                </button>
-
-                <button class="control-btn secondary" onclick="sendCommand('trunk')">
-                    <span class="icon">🚗</span>
-                    <span class="text">Открыть багажник</span>
-                    <span class="time">0.7 сек</span>
-                </button>
-
-                <button class="control-btn dark" onclick="sendCommand('sensor')">
-                    <span class="icon">🌡️</span>
-                    <span class="text">Температура и влажность</span>
-                    <span class="time">реальное время</span>
-                </button>
-            </div>
-
-            <!-- Лог действий -->
-            <div class="action-log">
-                <h3>📋 История действий</h3>
-                <div id="log-container" class="log-container">
-                    <div class="log-entry">Система запущена и готова к работе</div>
+            <!-- Виджет автомобиля -->
+            <section class="car-widget">
+                <div class="car-visualization">
+                    <div class="car-body">
+                        <div class="car-roof"></div>
+                        <div class="car-base"></div>
+                        <div class="car-door left-door" id="left-door"></div>
+                        <div class="car-door right-door" id="right-door"></div>
+                        <div class="car-trunk" id="trunk"></div>
+                        <div class="car-engine" id="engine"></div>
+                    </div>
                 </div>
-            </div>
-        </main>
+                <div class="car-info">
+                    <h3>Mercedes-Benz S-Class</h3>
+                    <div class="car-stats">
+                        <div class="car-stat">
+                            <span class="stat-icon">🔋</span>
+                            <span>84%</span>
+                        </div>
+                        <div class="car-stat">
+                            <span class="stat-icon">⛽</span>
+                            <span>65%</span>
+                        </div>
+                        <div class="car-stat">
+                            <span class="stat-icon">🛞</span>
+                            <span>2.4 бар</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-        <!-- Футер -->
-        <footer class="footer">
-            <p>⚡ Система работает в реальном времени</p>
-            <p class="timestamp" id="timestamp"></p>
-        </footer>
+            <!-- Панель быстрого доступа -->
+            <section class="quick-actions">
+                <h2>Быстрое управление</h2>
+                <div class="actions-grid">
+                    <button class="action-btn primary" onclick="sendCommand('start')">
+                        <div class="btn-icon">🚀</div>
+                        <span class="btn-text">Запуск двигателя</span>
+                        <span class="btn-badge">0.7с</span>
+                        <div class="btn-glow"></div>
+                    </button>
+
+                    <button class="action-btn success" onclick="sendCommand('open')">
+                        <div class="btn-icon">🔓</div>
+                        <span class="btn-text">Открыть замки</span>
+                        <span class="btn-badge">0.3с</span>
+                        <div class="btn-glow"></div>
+                    </button>
+
+                    <button class="action-btn warning" onclick="sendCommand('close')">
+                        <div class="btn-icon">🔒</div>
+                        <span class="btn-text">Закрыть замки</span>
+                        <span class="btn-badge">0.3с</span>
+                        <div class="btn-glow"></div>
+                    </button>
+
+                    <button class="action-btn danger" onclick="sendCommand('panic')">
+                        <div class="btn-icon">🚨</div>
+                        <span class="btn-text">Тревога</span>
+                        <span class="btn-badge">0.1с</span>
+                        <div class="btn-glow"></div>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Расширенное управление -->
+            <section class="advanced-controls">
+                <h2>Расширенные функции</h2>
+                <div class="controls-grid">
+                    <button class="control-card" onclick="sendCommand('status')">
+                        <div class="card-icon">📊</div>
+                        <h4>Статус системы</h4>
+                        <p>Полная диагностика</p>
+                        <div class="card-badge">0.3с</div>
+                    </button>
+
+                    <button class="control-card" onclick="sendCommand('trunk')">
+                        <div class="card-icon">🚗</div>
+                        <h4>Багажник</h4>
+                        <p>Дистанционное открытие</p>
+                        <div class="card-badge">0.7с</div>
+                    </button>
+
+                    <button class="control-card" onclick="sendCommand('sensor')">
+                        <div class="card-icon">🌡️</div>
+                        <h4>Датчики</h4>
+                        <p>Температура и влажность</p>
+                        <div class="card-badge">Real-time</div>
+                    </button>
+
+                    <button class="control-card" onclick="sendCommand('climate')">
+                        <div class="card-icon">❄️</div>
+                        <h4>Климат-контроль</h4>
+                        <p>Предварительный запуск</p>
+                        <div class="card-badge">1.2с</div>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Мониторинг в реальном времени -->
+            <section class="live-monitoring">
+                <div class="section-header">
+                    <h2>Мониторинг в реальном времени</h2>
+                    <div class="live-indicator">
+                        <div class="live-dot"></div>
+                        LIVE
+                    </div>
+                </div>
+                <div class="sensors-grid">
+                    <div class="sensor-card temperature">
+                        <div class="sensor-header">
+                            <span class="sensor-icon">🌡️</span>
+                            <span class="sensor-value" id="temp-value">22°C</span>
+                        </div>
+                        <div class="sensor-graph">
+                            <div class="graph-line"></div>
+                        </div>
+                        <span class="sensor-label">Температура салона</span>
+                    </div>
+
+                    <div class="sensor-card humidity">
+                        <div class="sensor-header">
+                            <span class="sensor-icon">💧</span>
+                            <span class="sensor-value" id="humidity-value">45%</span>
+                        </div>
+                        <div class="sensor-graph">
+                            <div class="graph-line"></div>
+                        </div>
+                        <span class="sensor-label">Влажность</span>
+                    </div>
+
+                    <div class="sensor-card voltage">
+                        <div class="sensor-header">
+                            <span class="sensor-icon">⚡</span>
+                            <span class="sensor-value" id="voltage-value">12.6V</span>
+                        </div>
+                        <div class="sensor-graph">
+                            <div class="graph-line"></div>
+                        </div>
+                        <span class="sensor-label">Напряжение АКБ</span>
+                    </div>
+                </div>
+            </section>
+        </main>
     </div>
 
     <script src="app.js"></script>
