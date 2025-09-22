@@ -3,16 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TELEDRIVE ULTIMATE</title>
+  <title>BMW iDRIVE</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
-      --bg: linear-gradient(135deg, #0a0a0a, #1a1a1a);
-      --card-bg: rgba(25, 25, 25, 0.9);
-      --btn-bg: #2a2a2a;
-      --btn-hover: #363636;
-      --accent: #007aff;
-      --text: #ffffff;
+      --bmw-orange: #ff7d00;
+      --bmw-blue: #0066b3;
+      --bmw-dark: #1a1a1a;
+      --bmw-gray: #2d2d2d;
+      --bmw-light: #e6e6e6;
     }
 
     * {
@@ -22,151 +21,135 @@
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
-      background: var(--bg);
-      color: var(--text);
+      font-family: 'BMW Group', 'Arial', sans-serif;
+      background: #000;
+      color: white;
       min-height: 100vh;
       overflow: hidden;
     }
 
-    /* Экран загрузки */
+    /* Экран загрузки BMW */
     .loading-screen {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: var(--bg);
+      background: #000;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       z-index: 1000;
-      transition: opacity 0.5s ease, transform 0.5s ease;
     }
 
-    .loading-screen.hidden {
+    .bmw-logo {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 30px;
       opacity: 0;
-      transform: scale(1.1);
-      pointer-events: none;
+      animation: fadeIn 1s ease 0.5s forwards;
     }
 
-    .speedometer {
+    .speedometer-container {
       position: relative;
-      width: 280px;
-      height: 280px;
+      width: 320px;
+      height: 200px;
       margin-bottom: 40px;
     }
 
-    .speedometer-circle {
+    .speedometer {
+      position: absolute;
       width: 100%;
       height: 100%;
-      border: 8px solid rgba(255, 255, 255, 0.1);
-      border-radius: 50%;
-      position: relative;
-      overflow: hidden;
     }
 
-    .speedometer-inner {
+    .speed-scale, .rpm-scale {
       position: absolute;
-      top: 10px;
-      left: 10px;
-      right: 10px;
-      bottom: 10px;
-      background: var(--bg);
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 10px;
     }
 
-    .speedometer-value {
-      font-size: 48px;
-      font-weight: 800;
-      background: linear-gradient(90deg, #ff2d55, #5856d6, #34c759);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .speedometer-label {
-      font-size: 14px;
-      opacity: 0.7;
-      margin-top: -10px;
-    }
-
-    .speedometer-ticks {
-      position: absolute;
+    .speed-scale {
       top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
-    }
-
-    .tick {
-      position: absolute;
-      background: rgba(255, 255, 255, 0.3);
-      width: 2px;
-      height: 10px;
-      top: 0;
-      left: 50%;
-      transform-origin: bottom center;
-    }
-
-    .tick.major {
-      height: 20px;
-      background: rgba(255, 255, 255, 0.6);
-      width: 3px;
-    }
-
-    .speedometer-hand {
-      position: absolute;
-      top: 20px;
-      left: 50%;
-      width: 4px;
-      height: 120px;
-      background: linear-gradient(to top, #ff2d55, #ff9500);
-      border-radius: 4px;
-      transform-origin: bottom center;
-      transform: translateX(-50%) rotate(-140deg);
-      transition: transform 2.5s cubic-bezier(0.25, 0.1, 0.25, 1);
-      box-shadow: 0 0 20px rgba(255, 45, 85, 0.5);
-      z-index: 2;
-    }
-
-    .speedometer-hand::after {
-      content: '';
-      position: absolute;
-      bottom: -10px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 20px;
-      height: 20px;
-      background: #ff2d55;
-      border-radius: 50%;
-      box-shadow: 0 0 20px rgba(255, 45, 85, 0.8);
-    }
-
-    .speedometer-glow {
-      position: absolute;
-      top: 50%;
-      left: 50%;
       width: 200px;
-      height: 200px;
-      background: radial-gradient(circle, rgba(255, 45, 85, 0.3) 0%, transparent 70%);
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
-      opacity: 0;
-      transition: opacity 0.3s ease;
+      height: 120px;
+      border-left: 3px solid var(--bmw-orange);
+    }
+
+    .rpm-scale {
+      top: 0;
+      right: 0;
+      width: 100px;
+      height: 120px;
+      border-right: 3px solid var(--bmw-orange);
+    }
+
+    .scale-numbers {
+      position: absolute;
+      font-size: 12px;
+      color: var(--bmw-light);
+      font-weight: 300;
+    }
+
+    .scale-line {
+      position: absolute;
+      background: var(--bmw-light);
+      opacity: 0.3;
+    }
+
+    .speed-hand, .rpm-hand {
+      position: absolute;
+      background: var(--bmw-orange);
+      border-radius: 2px;
+      transform-origin: bottom center;
+      transition: transform 0.1s ease;
+      box-shadow: 0 0 10px var(--bmw-orange);
+    }
+
+    .speed-hand {
+      width: 3px;
+      height: 80px;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) rotate(-45deg);
+    }
+
+    .rpm-hand {
+      width: 2px;
+      height: 60px;
+      bottom: 20px;
+      right: 50%;
+      transform: translateX(50%) rotate(-45deg);
+    }
+
+    .digital-display {
+      position: absolute;
+      bottom: 10px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--bmw-orange);
+      text-shadow: 0 0 10px var(--bmw-orange);
+    }
+
+    .units {
+      font-size: 14px;
+      color: var(--bmw-light);
+      margin-left: 5px;
     }
 
     .loading-text {
-      font-size: 18px;
-      opacity: 0.7;
-      text-align: center;
-      margin-top: 20px;
-      letter-spacing: 2px;
+      font-size: 16px;
+      color: var(--bmw-light);
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      opacity: 0;
+      animation: fadeIn 1s ease 1s forwards;
     }
 
     .flash {
@@ -181,158 +164,103 @@
       pointer-events: none;
     }
 
-    /* Основное приложение */
+    /* Основное приложение BMW iDrive */
     .app-content {
       opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.8s ease, transform 0.8s ease;
-      padding: 24px 20px;
+      background: #000;
       min-height: 100vh;
+      padding: 20px;
     }
 
     .app-content.visible {
       opacity: 1;
-      transform: translateY(0);
+      animation: bmwFadeIn 0.8s ease;
     }
 
-    .container {
-      max-width: 500px;
-      margin: 0 auto;
-    }
-
-    /* Анимация появления элементов */
-    .container > * {
-      opacity: 0;
-      transform: translateY(20px);
-      animation: fadeInUp 0.6s ease forwards;
-    }
-    .header { animation-delay: 0.1s; }
-    .btn:nth-child(1) { animation-delay: 0.2s; }
-    .btn:nth-child(2) { animation-delay: 0.3s; }
-    .btn:nth-child(3) { animation-delay: 0.4s; }
-    .btn:nth-child(4) { animation-delay: 0.5s; }
-    .btn:nth-child(5) { animation-delay: 0.6s; }
-    .status-card { animation-delay: 0.7s; }
-    .footer { animation-delay: 0.8s; }
-
-    @keyframes fadeInUp {
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .header {
+    .idrive-header {
       text-align: center;
-      margin-bottom: 40px;
+      margin-bottom: 30px;
+      padding-top: 20px;
     }
 
-    .logo {
-      font-size: 36px;
-      font-weight: 800;
-      letter-spacing: -1px;
-      background: linear-gradient(90deg, #ff2d55, #5856d6, #34c759);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    .idrive-logo {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--bmw-orange);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 10px;
     }
 
-    .subtitle {
-      font-size: 16px;
+    .idrive-subtitle {
+      font-size: 14px;
+      color: var(--bmw-light);
       opacity: 0.7;
-      margin-top: 8px;
-      letter-spacing: 0.5px;
+      letter-spacing: 1px;
     }
 
-    .btn {
-      display: block;
-      width: 100%;
-      padding: 22px 24px;
-      margin: 14px 0;
-      background: var(--btn-bg);
-      border: none;
-      border-radius: 20px;
-      color: var(--text);
-      font-size: 18px;
-      font-weight: 500;
-      text-align: left;
+    .control-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .idrive-btn {
+      background: var(--bmw-gray);
+      border: 1px solid rgba(255, 125, 0, 0.3);
+      border-radius: 8px;
+      padding: 20px 15px;
+      color: var(--bmw-light);
+      font-size: 14px;
+      text-align: center;
       cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      transition: all 0.3s ease;
       position: relative;
       overflow: hidden;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
 
-    .btn:before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-      transition: 0.5s;
+    .idrive-btn:hover {
+      background: rgba(255, 125, 0, 0.1);
+      border-color: var(--bmw-orange);
     }
 
-    .btn:active {
-      background: var(--btn-hover);
-      transform: translateY(2px);
-      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    }
-
-    .btn:hover:before {
-      left: 100%;
-    }
-
-    .btn-loading {
-      position: relative;
-      color: transparent;
-      pointer-events: none;
-    }
-    .btn-loading::after {
-      content: '';
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      top: 50%;
-      left: 50%;
-      margin-left: -10px;
-      margin-top: -10px;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-radius: 50%;
-      border-top-color: var(--text);
-      animation: spin 1s ease-in-out infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
+    .idrive-btn:active {
+      background: rgba(255, 125, 0, 0.2);
+      transform: scale(0.98);
     }
 
     .btn-icon {
-      display: inline-block;
-      width: 28px;
-      margin-right: 16px;
-      font-size: 22px;
-      vertical-align: middle;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      font-size: 24px;
+      margin-bottom: 8px;
+      display: block;
     }
 
-    .status-card {
-      background: var(--card-bg);
-      backdrop-filter: blur(25px);
-      padding: 28px;
-      border-radius: 24px;
-      margin: 40px 0;
-      border: 1px solid rgba(255,255,255,0.08);
-      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+    .btn-text {
+      font-weight: 500;
+    }
+
+    .btn-time {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      font-size: 10px;
+      color: var(--bmw-orange);
+      opacity: 0.7;
+    }
+
+    .status-panel {
+      background: var(--bmw-gray);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 25px 0;
+      border: 1px solid rgba(255, 125, 0, 0.2);
     }
 
     .status-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 24px;
-      margin-bottom: 24px;
+      gap: 20px;
     }
 
     .status-item {
@@ -340,169 +268,208 @@
     }
 
     .status-label {
-      font-size: 12px;
-      opacity: 0.6;
+      font-size: 11px;
+      color: var(--bmw-light);
+      opacity: 0.7;
       text-transform: uppercase;
       letter-spacing: 1px;
-      margin-bottom: 8px;
+      margin-bottom: 5px;
     }
 
     .status-value {
-      font-size: 26px;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-      background: linear-gradient(90deg, #ff9500, #ff2d55);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--bmw-orange);
     }
 
-    .status-row {
+    .connection-status {
       display: flex;
       justify-content: space-between;
-      padding-top: 24px;
-      border-top: 1px solid rgba(255,255,255,0.08);
+      align-items: center;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .status-indicator {
       display: flex;
       align-items: center;
-      font-size: 14px;
+      font-size: 12px;
+      color: var(--bmw-light);
     }
 
-    .dot {
-      width: 10px;
-      height: 10px;
+    .status-dot {
+      width: 8px;
+      height: 8px;
       background: #30d158;
       border-radius: 50%;
-      margin-right: 10px;
-      box-shadow: 0 0 10px #30d158;
+      margin-right: 8px;
+      box-shadow: 0 0 8px #30d158;
     }
 
     .footer {
       text-align: center;
-      opacity: 0.4;
-      font-size: 12px;
-      margin-top: 44px;
-      letter-spacing: 0.5px;
+      margin-top: 30px;
+      opacity: 0.5;
+      font-size: 11px;
+      color: var(--bmw-light);
+      letter-spacing: 1px;
     }
 
-    .pulse {
-      animation: pulse 1.5s infinite;
+    /* Анимации */
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    @keyframes bmwFadeIn {
+      from { 
+        opacity: 0;
+        transform: scale(1.05);
+      }
+      to { 
+        opacity: 1;
+        transform: scale(1);
+      }
     }
 
     @keyframes pulse {
-      0% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.7; transform: scale(1.02); }
-      100% { opacity: 1; transform: scale(1); }
+      0% { opacity: 1; }
+      50% { opacity: 0.7; }
+      100% { opacity: 1; }
     }
 
-    .glow {
-      text-shadow: 0 0 10px rgba(94, 234, 212, 0.8);
+    .pulse {
+      animation: pulse 2s infinite;
     }
 
     /* Адаптивность */
     @media (max-width: 400px) {
-      .speedometer {
-        width: 220px;
-        height: 220px;
+      .speedometer-container {
+        width: 280px;
+        height: 180px;
       }
-      .speedometer-hand {
-        height: 90px;
-        top: 25px;
+      
+      .speed-scale {
+        width: 180px;
       }
-      .app-content {
-        padding: 16px 12px;
+      
+      .rpm-scale {
+        width: 90px;
       }
-      .btn {
-        padding: 18px 20px;
-        font-size: 16px;
-        border-radius: 16px;
-        margin: 10px 0;
+      
+      .control-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
       }
-      .status-value {
-        font-size: 22px;
-      }
-      .status-card {
-        padding: 20px;
-        border-radius: 20px;
-        margin: 30px 0;
-      }
-      .logo {
-        font-size: 32px;
+      
+      .idrive-btn {
+        padding: 18px 12px;
       }
     }
   </style>
 </head>
 <body>
-  <!-- Экран загрузки -->
+  <!-- Экран загрузки BMW -->
   <div class="loading-screen" id="loadingScreen">
-    <div class="speedometer">
-      <div class="speedometer-circle">
-        <div class="speedometer-ticks" id="ticksContainer"></div>
-        <div class="speedometer-hand" id="speedHand"></div>
-        <div class="speedometer-glow" id="speedGlow"></div>
-        <div class="speedometer-inner">
-          <div class="speedometer-value" id="speedValue">0</div>
-          <div class="speedometer-label">км/ч</div>
+    <svg class="bmw-logo" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="45" fill="none" stroke="#fff" stroke-width="2"/>
+      <path fill="#fff" d="M50 20A30 30 0 1 1 20 50 30 30 0 0 1 50 20z"/>
+      <path fill="#000" d="M50 25A25 25 0 1 1 25 50 25 25 0 0 1 50 25z"/>
+      <text x="50" y="55" text-anchor="middle" fill="#fff" font-size="24" font-weight="bold">BMW</text>
+    </svg>
+    
+    <div class="speedometer-container">
+      <div class="speedometer">
+        <!-- Шкала скорости 0-260 -->
+        <div class="speed-scale" id="speedScale"></div>
+        <!-- Шкала оборотов 0-5 -->
+        <div class="rpm-scale" id="rpmScale"></div>
+        
+        <!-- Стрелки -->
+        <div class="speed-hand" id="speedHand"></div>
+        <div class="rpm-hand" id="rpmHand"></div>
+        
+        <!-- Цифровое отображение -->
+        <div class="digital-display">
+          <span id="speedValue">0</span><span class="units">km/h</span>
+          <span style="margin: 0 10px">|</span>
+          <span id="rpmValue">0</span><span class="units">x1000</span>
         </div>
       </div>
     </div>
-    <div class="loading-text" id="loadingText">ЗАГРУЗКА СИСТЕМЫ</div>
+    
+    <div class="loading-text">iDRIVE SYSTEM LOADING</div>
   </div>
 
   <!-- Вспышка -->
   <div class="flash" id="flash"></div>
 
-  <!-- Основное приложение -->
+  <!-- Основное приложение BMW iDrive -->
   <div class="app-content" id="appContent">
-    <div class="container">
-      <div class="header">
-        <div class="logo glow">TELEDRIVE</div>
-        <div class="subtitle">Умное управление автомобилем</div>
-      </div>
-
-      <button class="btn" onclick="sendCommand('/start', this)">
-        <span class="btn-icon">🚀</span> ЗАПУСК ДВИГАТЕЛЯ <span style="float:right">0.7с</span>
-      </button>
-      <button class="btn" onclick="sendCommand('/open', this)">
-        <span class="btn-icon">🔓</span> ОТКРЫТЬ ЗАМОК <span style="float:right">0.3с</span>
-      </button>
-      <button class="btn" onclick="sendCommand('/close', this)">
-        <span class="btn-icon">🔒</span> ЗАКРЫТЬ ЗАМОК <span style="float:right">0.3с</span>
-      </button>
-      <button class="btn" onclick="sendCommand('/status', this)">
-        <span class="btn-icon">📊</span> СТАТУС СИСТЕМЫ <span style="float:right">0.3с</span>
-      </button>
-      <button class="btn" onclick="sendCommand('/trunk', this)">
-        <span class="btn-icon">🚗</span> ОТКРЫТЬ БАГАЖНИК <span style="float:right">0.7с</span>
-      </button>
-
-      <div class="status-card">
-        <div class="status-grid">
-          <div class="status-item">
-            <div class="status-label">Температура</div>
-            <div class="status-value pulse" id="temp">24.5°C</div>
-          </div>
-          <div class="status-item">
-            <div class="status-label">Влажность</div>
-            <div class="status-value pulse" id="humi">58%</div>
-          </div>
-        </div>
-        <div class="status-row">
-          <div class="status-indicator">
-            <div class="dot"></div>
-            <div>ESP32 Online</div>
-          </div>
-          <div class="status-indicator">
-            <div class="dot"></div>
-            <div>Wi-Fi Strong</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="footer">TELEDRIVE ULTIMATE • Цифровой ключ от твоей жизни</div>
+    <div class="idrive-header">
+      <div class="idrive-logo">iDrive</div>
+      <div class="idrive-subtitle">VEHICLE CONTROL SYSTEM</div>
     </div>
+
+    <div class="control-grid">
+      <div class="idrive-btn" onclick="sendCommand('/start', this)">
+        <span class="btn-icon">🚀</span>
+        <div class="btn-text">ENGINE START</div>
+        <div class="btn-time">0.7s</div>
+      </div>
+      
+      <div class="idrive-btn" onclick="sendCommand('/lock', this)">
+        <span class="btn-icon">🔒</span>
+        <div class="btn-text">DOOR LOCK</div>
+        <div class="btn-time">0.3s</div>
+      </div>
+      
+      <div class="idrive-btn" onclick="sendCommand('/unlock', this)">
+        <span class="btn-icon">🔓</span>
+        <div class="btn-text">DOOR UNLOCK</div>
+        <div class="btn-time">0.3s</div>
+      </div>
+      
+      <div class="idrive-btn" onclick="sendCommand('/trunk', this)">
+        <span class="btn-icon">📦</span>
+        <div class="btn-text">TRUNK OPEN</div>
+        <div class="btn-time">0.5s</div>
+      </div>
+    </div>
+
+    <div class="status-panel">
+      <div class="status-grid">
+        <div class="status-item">
+          <div class="status-label">TEMPERATURE</div>
+          <div class="status-value pulse" id="temp">21.5°C</div>
+        </div>
+        <div class="status-item">
+          <div class="status-label">HUMIDITY</div>
+          <div class="status-value pulse" id="humi">45%</div>
+        </div>
+        <div class="status-item">
+          <div class="status-label">VOLTAGE</div>
+          <div class="status-value" id="voltage">12.6V</div>
+        </div>
+        <div class="status-item">
+          <div class="status-label">FUEL</div>
+          <div class="status-value" id="fuel">85%</div>
+        </div>
+      </div>
+      
+      <div class="connection-status">
+        <div class="status-indicator">
+          <div class="status-dot"></div>
+          <div>VEHICLE ONLINE</div>
+        </div>
+        <div class="status-indicator">
+          <div class="status-dot"></div>
+          <div>TELEGRAM CONNECTED</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">BMW iDRIVE SYSTEM • CONNECTED DRIVE</div>
   </div>
 
   <script>
@@ -511,108 +478,135 @@
     tg.ready();
     tg.setHeaderColor('secondary_bg_color');
 
-    // Создание делений на спидометре
-    function createTicks() {
-      const ticksContainer = document.getElementById('ticksContainer');
-      const totalTicks = 25; // 0-250 с шагом 10
+    // Создание шкал спидометра
+    function createScales() {
+      const speedScale = document.getElementById('speedScale');
+      const rpmScale = document.getElementById('rpmScale');
       
-      for (let i = 0; i <= totalTicks; i++) {
-        const tick = document.createElement('div');
-        tick.className = i % 5 === 0 ? 'tick major' : 'tick';
-        tick.style.transform = `translateX(-50%) rotate(${i * 10 - 140}deg)`;
-        ticksContainer.appendChild(tick);
+      // Создание шкалы скорости 0-260
+      for (let i = 0; i <= 260; i += 20) {
+        const number = document.createElement('div');
+        number.className = 'scale-numbers';
+        number.style.left = `${(i / 260) * 100}%`;
+        number.style.bottom = '0';
+        number.textContent = i;
+        speedScale.appendChild(number);
+        
+        const line = document.createElement('div');
+        line.className = 'scale-line';
+        line.style.left = `${(i / 260) * 100}%`;
+        line.style.bottom = '0';
+        line.style.width = '1px';
+        line.style.height = i % 40 === 0 ? '15px' : '8px';
+        speedScale.appendChild(line);
+      }
+      
+      // Создание шкалы оборотов 0-5
+      for (let i = 0; i <= 5; i += 1) {
+        const number = document.createElement('div');
+        number.className = 'scale-numbers';
+        number.style.right = `${(i / 5) * 100}%`;
+        number.style.bottom = '0';
+        number.textContent = i;
+        rpmScale.appendChild(number);
+        
+        const line = document.createElement('div');
+        line.className = 'scale-line';
+        line.style.right = `${(i / 5) * 100}%`;
+        line.style.bottom = '0';
+        line.style.width = '1px';
+        line.style.height = i % 1 === 0 ? '12px' : '6px';
+        rpmScale.appendChild(line);
       }
     }
 
-    // Анимация загрузки
-    function startLoadingAnimation() {
+    // Анимация спидометра BMW
+    function startBMWAnimation() {
       const speedHand = document.getElementById('speedHand');
+      const rpmHand = document.getElementById('rpmHand');
       const speedValue = document.getElementById('speedValue');
-      const speedGlow = document.getElementById('speedGlow');
-      const loadingText = document.getElementById('loadingText');
+      const rpmValue = document.getElementById('rpmValue');
       
       let speed = 0;
-      const targetSpeed = 250;
-      const duration = 2500; // 2.5 секунды
-      const interval = 20; // обновление каждые 20мс
-      const steps = duration / interval;
-      const increment = targetSpeed / steps;
+      let rpm = 0;
+      const maxSpeed = 260;
+      const maxRpm = 5;
+      const duration = 3000;
+      const startTime = Date.now();
       
-      const animation = setInterval(() => {
-        speed += increment;
-        if (speed >= targetSpeed) {
-          speed = targetSpeed;
-          clearInterval(animation);
-          
+      function animate() {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        // Плавное ускорение в начале и замедление в конце
+        const easeProgress = 1 - Math.pow(1 - progress, 3);
+        
+        speed = Math.round(easeProgress * maxSpeed);
+        rpm = Math.round(easeProgress * maxRpm * 10) / 10;
+        
+        // Обновление стрелок
+        speedHand.style.transform = `translateX(-50%) rotate(${speed / maxSpeed * 180 - 90}deg)`;
+        rpmHand.style.transform = `translateX(50%) rotate(${rpm / maxRpm * 180 - 90}deg)`;
+        
+        // Обновление цифровых значений
+        speedValue.textContent = speed;
+        rpmValue.textContent = rpm.toFixed(1);
+        
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
           // Завершение анимации
           setTimeout(() => {
-            speedGlow.style.opacity = '1';
-            loadingText.textContent = 'СИСТЕМА ГОТОВА';
+            // Яркая вспышка
+            const flash = document.getElementById('flash');
+            flash.style.transition = 'opacity 0.4s ease';
+            flash.style.opacity = '1';
             
             setTimeout(() => {
-              // Вспышка
-              const flash = document.getElementById('flash');
-              flash.style.transition = 'opacity 0.3s ease';
-              flash.style.opacity = '1';
+              flash.style.opacity = '0';
               
+              // Показ основного приложения
               setTimeout(() => {
-                flash.style.opacity = '0';
-                
-                // Показ основного приложения
-                setTimeout(() => {
-                  document.getElementById('loadingScreen').classList.add('hidden');
-                  document.getElementById('appContent').classList.add('visible');
-                }, 300);
-              }, 100);
-            }, 500);
+                document.getElementById('loadingScreen').style.display = 'none';
+                document.getElementById('appContent').classList.add('visible');
+              }, 400);
+            }, 200);
           }, 500);
         }
-        
-        // Обновление позиции стрелки (от -140° до 140°)
-        const rotation = (speed / targetSpeed) * 280 - 140;
-        speedHand.style.transform = `translateX(-50%) rotate(${rotation}deg)`;
-        speedValue.textContent = Math.round(speed);
-      }, interval);
+      }
+      
+      animate();
     }
 
     // Инициализация
     document.addEventListener('DOMContentLoaded', () => {
-      createTicks();
-      setTimeout(startLoadingAnimation, 500);
+      createScales();
+      setTimeout(startBMWAnimation, 1000);
     });
 
     // Функции управления
     function sendCommand(cmd, buttonElement) {
-      buttonElement.disabled = true;
-      buttonElement.classList.add('btn-loading');
+      buttonElement.style.background = 'rgba(255, 125, 0, 0.3)';
       tg.sendData(cmd);
 
       setTimeout(() => {
-        buttonElement.disabled = false;
-        buttonElement.classList.remove('btn-loading');
-        if (cmd === '/start' || cmd === '/status') {
-          updateSensorData();
-        }
-      }, 1000);
+        buttonElement.style.background = '';
+        updateVehicleData();
+      }, 700);
     }
 
-    function updateSensorData() {
-      const tempElement = document.getElementById("temp");
-      const humiElement = document.getElementById("humi");
+    function updateVehicleData() {
+      const elements = ['temp', 'humi', 'voltage', 'fuel'];
+      elements.forEach(id => {
+        const element = document.getElementById(id);
+        element.classList.add('pulse');
+        setTimeout(() => element.classList.remove('pulse'), 1000);
+      });
       
-      tempElement.classList.add('pulse');
-      humiElement.classList.add('pulse');
-      
-      setTimeout(() => {
-        tempElement.classList.remove('pulse');
-        humiElement.classList.remove('pulse');
-        
-        const currentTemp = parseFloat(tempElement.innerText);
-        const currentHumi = parseFloat(humiElement.innerText);
-        
-        tempElement.innerText = (currentTemp + (Math.random() - 0.5)).toFixed(1) + "°C";
-        humiElement.innerText = Math.max(40, Math.min(80, currentHumi + (Math.random() - 0.5) * 10)).toFixed(0) + "%";
-      }, 600);
+      // Обновление данных с небольшими случайными изменениями
+      document.getElementById('temp').textContent = (20 + Math.random() * 5).toFixed(1) + '°C';
+      document.getElementById('humi').textContent = (40 + Math.random() * 15).toFixed(0) + '%';
+      document.getElementById('voltage').textContent = (12.4 + Math.random() * 0.4).toFixed(1) + 'V';
     }
   </script>
 </body>
