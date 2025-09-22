@@ -3,15 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мое Mini App</title>
+    <title>🚗 Управление сигнализацией</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="app">
-        <h1>Привет, <span id="user-name">Пользователь</span>!</h1>
-        <button onclick="sendDataToBot()">Отправить данные боту</button>
+    <div class="container">
+        <!-- Заголовок -->
+        <header class="header">
+            <div class="status-indicator">
+                <div class="status-dot active"></div>
+                <span>СИСТЕМА АКТИВНА</span>
+            </div>
+            <h1>🚗 СИГНАЛИЗАЦИЯ АВТОМОБИЛЯ</h1>
+        </header>
+
+        <!-- Основная панель управления -->
+        <main class="control-panel">
+            <!-- Статус автомобиля -->
+            <div class="car-status">
+                <div class="car-icon">🚗</div>
+                <div class="status-info">
+                    <h3>Состояние системы</h3>
+                    <p class="status-text">Все системы в норме</p>
+                    <div class="sensors">
+                        <span class="sensor">🔒 Замки: закрыты</span>
+                        <span class="sensor">🚗 Двигатель: выключен</span>
+                        <span class="sensor">🌡️ Температура: 22°C</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Панель кнопок управления -->
+            <div class="controls-grid">
+                <button class="control-btn primary" onclick="sendCommand('start')">
+                    <span class="icon">🚀</span>
+                    <span class="text">Запуск двигателя</span>
+                    <span class="time">0.7 сек</span>
+                </button>
+
+                <button class="control-btn success" onclick="sendCommand('open')">
+                    <span class="icon">🔓</span>
+                    <span class="text">Открыть замок</span>
+                    <span class="time">0.3 сек</span>
+                </button>
+
+                <button class="control-btn warning" onclick="sendCommand('close')">
+                    <span class="icon">🔒</span>
+                    <span class="text">Закрыть замок</span>
+                    <span class="time">0.3 сек</span>
+                </button>
+
+                <button class="control-btn info" onclick="sendCommand('status')">
+                    <span class="icon">📊</span>
+                    <span class="text">Сигнал статуса</span>
+                    <span class="time">0.3 сек</span>
+                </button>
+
+                <button class="control-btn secondary" onclick="sendCommand('trunk')">
+                    <span class="icon">🚗</span>
+                    <span class="text">Открыть багажник</span>
+                    <span class="time">0.7 сек</span>
+                </button>
+
+                <button class="control-btn dark" onclick="sendCommand('sensor')">
+                    <span class="icon">🌡️</span>
+                    <span class="text">Температура и влажность</span>
+                    <span class="time">реальное время</span>
+                </button>
+            </div>
+
+            <!-- Лог действий -->
+            <div class="action-log">
+                <h3>📋 История действий</h3>
+                <div id="log-container" class="log-container">
+                    <div class="log-entry">Система запущена и готова к работе</div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Футер -->
+        <footer class="footer">
+            <p>⚡ Система работает в реальном времени</p>
+            <p class="timestamp" id="timestamp"></p>
+        </footer>
     </div>
+
     <script src="app.js"></script>
 </body>
 </html>
