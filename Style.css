@@ -1,16 +1,251 @@
-/* style.css */
+/* Основные стили с учетом темы Telegram */
+:root {
+    --tg-theme-bg-color: #ffffff;
+    --tg-theme-text-color: #000000;
+    --tg-theme-button-color: #2481cc;
+    --tg-theme-button-text-color: #ffffff;
+    --tg-theme-secondary-bg-color: #f0f0f0;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --tg-theme-bg-color: #1c1c1d;
+        --tg-theme-text-color: #ffffff;
+        --tg-theme-button-color: #2481cc;
+        --tg-theme-button-text-color: #ffffff;
+        --tg-theme-secondary-bg-color: #2c2c2e;
+    }
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background: var(--tg-theme-bg-color);
+    color: var(--tg-theme-text-color);
+    line-height: 1.6;
+    padding: 0;
     margin: 0;
-    padding: 20px;
-    background-color: var(--tg-theme-bg-color, #ffffff);
-    color: var(--tg-theme-text-color, #000000);
 }
-button {
-    background-color: var(--tg-theme-button-color, #6C47FF);
-    color: var(--tg-theme-button-text-color, #ffffff);
+
+.container {
+    max-width: 100%;
+    min-height: 100vh;
+    padding: 20px;
+    background: linear-gradient(135deg, var(--tg-theme-secondary-bg-color) 0%, var(--tg-theme-bg-color) 100%);
+}
+
+/* Заголовок */
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: var(--tg-theme-secondary-bg-color);
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.status-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #ff4444;
+    animation: pulse 2s infinite;
+}
+
+.status-dot.active {
+    background: #00C851;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--tg-theme-text-color);
+}
+
+/* Статус автомобиля */
+.car-status {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 25px;
+    background: var(--tg-theme-secondary-bg-color);
+    border-radius: 20px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.car-icon {
+    font-size: 60px;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+.status-info h3 {
+    margin-bottom: 8px;
+    color: var(--tg-theme-text-color);
+}
+
+.status-text {
+    color: #00C851;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.sensors {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 14px;
+}
+
+.sensor {
+    padding: 4px 8px;
+    background: rgba(0,200,81,0.1);
+    border-radius: 8px;
+    border-left: 3px solid #00C851;
+}
+
+/* Панель управления */
+.controls-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.control-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
     border: none;
-    padding: 10px 20px;
-    border-radius: 10px;
+    border-radius: 15px;
+    font-size: 16px;
+    font-weight: 600;
     cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.control-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+.control-btn:active {
+    transform: translateY(0);
+}
+
+.control-btn .icon {
+    font-size: 24px;
+    margin-right: 15px;
+}
+
+.control-btn .text {
+    flex-grow: 1;
+}
+
+.control-btn .time {
+    font-size: 12px;
+    opacity: 0.8;
+    font-weight: normal;
+}
+
+/* Цвета кнопок */
+.primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+.success { background: linear-gradient(135deg, #00C851 0%, #007E33 100%); color: white; }
+.warning { background: linear-gradient(135deg, #ffbb33 0%, #FF8800 100%); color: black; }
+.info { background: linear-gradient(135deg, #33b5e5 0%, #0099CC 100%); color: white; }
+.secondary { background: linear-gradient(135deg, #aa66cc 0%, #9933CC 100%); color: white; }
+.dark { background: linear-gradient(135deg, #2E2E2E 0%, #1C1C1C 100%); color: white; }
+
+/* Лог действий */
+.action-log {
+    background: var(--tg-theme-secondary-bg-color);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.action-log h3 {
+    margin-bottom: 15px;
+    color: var(--tg-theme-text-color);
+}
+
+.log-container {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.log-entry {
+    padding: 10px;
+    margin: 5px 0;
+    background: rgba(0,0,0,0.05);
+    border-radius: 8px;
+    border-left: 3px solid var(--tg-theme-button-color);
+    font-size: 14px;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* Футер */
+.footer {
+    text-align: center;
+    margin-top: 25px;
+    padding: 15px;
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.timestamp {
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+/* Адаптивность */
+@media (min-width: 768px) {
+    .controls-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .control-btn {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+    }
+    
+    .control-btn .icon {
+        margin-right: 0;
+        font-size: 32px;
+    }
 }
