@@ -6,114 +6,238 @@
   <title>TELEDRIVE ULTIMATE</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
+    :root {
+      --bg: linear-gradient(135deg, #0a0a0a, #1a1a1a);
+      --card-bg: rgba(25, 25, 25, 0.9);
+      --btn-bg: #1e1e1e;
+      --btn-hover: #2a2a2a;
+      --accent: #007aff;
+      --text: #ffffff;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
-      background: #000;
-      color: #fff;
-      padding: 20px;
-      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      padding: 24px 20px;
+      min-height: 100vh;
     }
+
     .container {
       max-width: 500px;
       margin: 0 auto;
     }
-    h1 {
-      font-size: 28px;
-      font-weight: 600;
+
+    .header {
       text-align: center;
-      margin: 20px 0;
+      margin-bottom: 40px;
     }
+
+    .logo {
+      font-size: 36px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      background: linear-gradient(90deg, #ff2d55, #5856d6, #34c759);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+
     .subtitle {
-      text-align: center;
-      opacity: 0.7;
       font-size: 16px;
-      margin-bottom: 30px;
+      opacity: 0.7;
+      margin-top: 8px;
+      letter-spacing: 0.5px;
     }
+
     .btn {
       display: block;
       width: 100%;
-      padding: 18px;
-      margin: 10px 0;
-      background: #1c1c1e;
+      padding: 22px 24px;
+      margin: 14px 0;
+      background: var(--btn-bg);
       border: none;
-      border-radius: 16px;
-      color: #fff;
+      border-radius: 20px;
+      color: var(--text);
       font-size: 18px;
       font-weight: 500;
-      text-align: center;
+      text-align: left;
       cursor: pointer;
-      transition: background 0.3s, transform 0.1s;
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
+
+    .btn:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+      transition: 0.5s;
+    }
+
     .btn:active {
-      background: #2c2c2e;
-      transform: scale(0.98);
+      background: var(--btn-hover);
+      transform: translateY(2px);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
     }
-    .status {
-      background: #1c1c1e;
-      padding: 20px;
-      border-radius: 16px;
-      margin: 30px 0;
-      text-align: center;
+
+    .btn:hover:before {
+      left: 100%;
     }
-    .status-row {
-      display: flex;
-      justify-content: space-around;
-      margin: 10px 0;
+
+    .btn-icon {
+      display: inline-block;
+      width: 28px;
+      margin-right: 16px;
+      font-size: 22px;
+      vertical-align: middle;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
     }
+
+    .status-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(25px);
+      padding: 28px;
+      border-radius: 24px;
+      margin: 40px 0;
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+    }
+
+    .status-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
     .status-item {
       text-align: center;
     }
+
     .status-label {
       font-size: 12px;
-      opacity: 0.7;
+      opacity: 0.6;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
     }
+
     .status-value {
-      font-size: 18px;
-      font-weight: 600;
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      background: linear-gradient(90deg, #ff9500, #ff2d55);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
+
+    .status-row {
+      display: flex;
+      justify-content: space-between;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      background: #30d158;
+      border-radius: 50%;
+      margin-right: 10px;
+      box-shadow: 0 0 10px #30d158;
+    }
+
     .footer {
       text-align: center;
-      opacity: 0.5;
+      opacity: 0.4;
       font-size: 12px;
-      margin-top: 40px;
+      margin-top: 44px;
+      letter-spacing: 0.5px;
+    }
+
+    .pulse {
+      animation: pulse 1.5s infinite;
+      text-shadow: 0 0 20px rgba(255,255,255,0.8);
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.7; transform: scale(1.02); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    .glow {
+      text-shadow: 0 0 10px rgba(94, 234, 212, 0.8);
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>🚗 TELEDRIVE ULTIMATE</h1>
-    <p class="subtitle">Управляй автомобилем из любой точки мира</p>
+    <div class="header">
+      <div class="logo glow">TELEDRIVE</div>
+      <div class="subtitle">Умное управление автомобилем</div>
+    </div>
 
-    <button class="btn" onclick="sendCommand('/start')">🚀 ЗАПУСК ДВИГАТЕЛЯ (0.7с)</button>
-    <button class="btn" onclick="sendCommand('/open')">🔓 ОТКРЫТЬ ЗАМОК (0.3с)</button>
-    <button class="btn" onclick="sendCommand('/close')">🔒 ЗАКРЫТЬ ЗАМОК (0.3с)</button>
-    <button class="btn" onclick="sendCommand('/status')">📊 СТАТУС СИСТЕМЫ (0.3с)</button>
-    <button class="btn" onclick="sendCommand('/trunk')">🚗 ОТКРЫТЬ БАГАЖНИК (0.7с)</button>
+    <button class="btn" onclick="sendCommand('/start')">
+      <span class="btn-icon">🚀</span> ЗАПУСК ДВИГАТЕЛЯ <span style="float:right">0.7с</span>
+    </button>
+    <button class="btn" onclick="sendCommand('/open')">
+      <span class="btn-icon">🔓</span> ОТКРЫТЬ ЗАМОК <span style="float:right">0.3с</span>
+    </button>
+    <button class="btn" onclick="sendCommand('/close')">
+      <span class="btn-icon">🔒</span> ЗАКРЫТЬ ЗАМОК <span style="float:right">0.3с</span>
+    </button>
+    <button class="btn" onclick="sendCommand('/status')">
+      <span class="btn-icon">📊</span> СТАТУС СИСТЕМЫ <span style="float:right">0.3с</span>
+    </button>
+    <button class="btn" onclick="sendCommand('/trunk')">
+      <span class="btn-icon">🚗</span> ОТКРЫТЬ БАГАЖНИК <span style="float:right">0.7с</span>
+    </button>
 
-    <div class="status">
-      <div class="status-row">
+    <div class="status-card">
+      <div class="status-grid">
         <div class="status-item">
-          <div class="status-label">🌡️ Температура</div>
-          <div class="status-value" id="temp">24.5°C</div>
+          <div class="status-label">Температура</div>
+          <div class="status-value pulse" id="temp">24.5°C</div>
         </div>
         <div class="status-item">
-          <div class="status-label">💧 Влажность</div>
-          <div class="status-value" id="humi">58%</div>
+          <div class="status-label">Влажность</div>
+          <div class="status-value pulse" id="humi">58%</div>
         </div>
       </div>
       <div class="status-row">
-        <div class="status-item">
-          <div class="status-label">🔋 ESP32</div>
-          <div class="status-value">Online</div>
+        <div class="status-indicator">
+          <div class="dot"></div>
+          <div>ESP32 Online</div>
         </div>
-        <div class="status-item">
-          <div class="status-label">📶 Wi-Fi</div>
-          <div class="status-value">Strong</div>
+        <div class="status-indicator">
+          <div class="dot"></div>
+          <div>Wi-Fi Strong</div>
         </div>
       </div>
     </div>
 
-    <p class="footer">TELEDRIVE ULTIMATE — цифровой ключ от твоей жизни</p>
+    <div class="footer">TELEDRIVE ULTIMATE • Цифровой ключ от твоей жизни</div>
   </div>
 
   <script>
@@ -123,8 +247,14 @@
 
     function sendCommand(cmd) {
       tg.sendData(cmd);
-      // Эмуляция обновления статуса
+      
+      // Анимация статуса
+      document.getElementById("temp").classList.add('pulse');
+      document.getElementById("humi").classList.add('pulse');
+      
       setTimeout(() => {
+        document.getElementById("temp").classList.remove('pulse');
+        document.getElementById("humi").classList.remove('pulse');
         document.getElementById("temp").innerText = (20 + Math.random() * 5).toFixed(1) + "°C";
         document.getElementById("humi").innerText = (50 + Math.random() * 10).toFixed(0) + "%";
       }, 1000);
