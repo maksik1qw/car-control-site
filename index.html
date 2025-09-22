@@ -1,256 +1,128 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🚗 CarGuard Pro</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TELEDRIVE — Умная сигнализация</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      padding: 20px;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      color: white;
+      margin: 0;
+    }
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    h1 {
+      text-align: center;
+      font-size: 24px;
+      margin: 20px 0;
+    }
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 16px;
+      margin: 12px 0;
+      border: none;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.1s, opacity 0.1s;
+    }
+    .btn:active {
+      transform: scale(0.98);
+      opacity: 0.9;
+    }
+    .btn-start { background: #ff5a5f; color: white; }
+    .btn-open { background: #00c853; color: white; }
+    .btn-close { background: #ffbb33; color: black; }
+    .btn-status { background: #33b5e5; color: white; }
+    .btn-trunk { background: #aa66cc; color: white; }
+    .status-box {
+      background: rgba(255,255,255,0.1);
+      padding: 20px;
+      border-radius: 12px;
+      margin: 20px 0;
+      text-align: center;
+      backdrop-filter: blur(10px);
+    }
+    .popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      color: black;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      z-index: 1000;
+      display: none;
+    }
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 999;
+      display: none;
+    }
+  </style>
 </head>
 <body>
-    <!-- Прелоадер -->
-    <div id="preloader" class="preloader">
-        <div class="preloader-content">
-            <div class="car-loader">🚗</div>
-            <div class="loading-bar">
-                <div class="loading-progress"></div>
-            </div>
-            <p>Загрузка системы безопасности...</p>
-        </div>
+  <div class="container">
+    <h1>🚗 TELEDRIVE</h1>
+    <p style="text-align:center; opacity:0.9;">Управляй автомобилем из любой точки мира</p>
+
+    <button class="btn btn-start" onclick="sendCommand('/start')">🚀 ЗАПУСК ДВИГАТЕЛЯ (0.7с)</button>
+    <button class="btn btn-open" onclick="sendCommand('/open')">🔓 ОТКРЫТЬ ЗАМОК (0.3с)</button>
+    <button class="btn btn-close" onclick="sendCommand('/close')">🔒 ЗАКРЫТЬ ЗАМОК (0.3с)</button>
+    <button class="btn btn-status" onclick="sendCommand('/status')">📊 СТАТУС (0.3с)</button>
+    <button class="btn btn-trunk" onclick="sendCommand('/trunk')">🚗 ОТКРЫТЬ БАГАЖНИК (0.7с)</button>
+
+    <div class="status-box">
+      <div>🌡️ Температура: <span id="temp">—</span>°C</div>
+      <div>💧 Влажность: <span id="humi">—</span>%</div>
     </div>
+  </div>
 
-    <!-- Уведомление -->
-    <div id="notification" class="notification hidden">
-        <div class="notification-icon">✓</div>
-        <span id="notification-text"></span>
-        <div class="notification-progress"></div>
-    </div>
+  <div class="overlay" id="overlay"></div>
+  <div class="popup" id="popup"></div>
 
-    <div class="container">
-        <!-- Боковая панель -->
-        <aside class="sidebar">
-            <div class="user-info">
-                <div class="user-avatar">
-                    <span id="user-avatar">👤</span>
-                </div>
-                <div class="user-details">
-                    <h3 id="user-name">Водитель</h3>
-                    <p>Premium аккаунт</p>
-                </div>
-            </div>
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+    tg.ready();
 
-            <nav class="sidebar-nav">
-                <a href="#" class="nav-item active" data-tab="control">
-                    <span class="nav-icon">🎮</span>
-                    Управление
-                </a>
-                <a href="#" class="nav-item" data-tab="stats">
-                    <span class="nav-icon">📊</span>
-                    Статистика
-                </a>
-                <a href="#" class="nav-item" data-tab="settings">
-                    <span class="nav-icon">⚙️</span>
-                    Настройки
-                </a>
-            </nav>
+    function sendCommand(cmd) {
+      tg.sendData(cmd);
+      showPopup("✅ Команда отправлена: " + cmd);
+    }
 
-            <div class="system-health">
-                <h4>Состояние системы</h4>
-                <div class="health-item">
-                    <span>Батарея</span>
-                    <div class="health-bar">
-                        <div class="health-progress" style="width: 87%"></div>
-                    </div>
-                    <span>87%</span>
-                </div>
-                <div class="health-item">
-                    <span>Сигнал</span>
-                    <div class="health-bar">
-                        <div class="health-progress" style="width: 95%"></div>
-                    </div>
-                    <span>95%</span>
-                </div>
-            </div>
-        </aside>
+    function showPopup(text) {
+      const popup = document.getElementById("popup");
+      const overlay = document.getElementById("overlay");
+      popup.innerText = text;
+      popup.style.display = "block";
+      overlay.style.display = "block";
+      setTimeout(() => {
+        popup.style.display = "none";
+        overlay.style.display = "none";
+      }, 2000);
+    }
 
-        <!-- Основной контент -->
-        <main class="main-content">
-            <!-- Заголовок с анимированным статусом -->
-            <header class="main-header">
-                <div class="header-content">
-                    <div class="title-section">
-                        <h1>CarGuard <span class="pro-badge">PRO</span></h1>
-                        <div class="status-pill active">
-                            <div class="pulse-dot"></div>
-                            Система активна
-                        </div>
-                    </div>
-                    <div class="header-stats">
-                        <div class="stat-card">
-                            <div class="stat-icon">🕒</div>
-                            <div class="stat-info">
-                                <span class="stat-value" id="uptime">24д 16ч</span>
-                                <span class="stat-label">Активность</span>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon">📡</div>
-                            <div class="stat-info">
-                                <span class="stat-value" id="signal">98%</span>
-                                <span class="stat-label">Сигнал</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </header>
-
-            <!-- Виджет автомобиля -->
-            <section class="car-widget">
-                <div class="car-visualization">
-                    <div class="car-body">
-                        <div class="car-roof"></div>
-                        <div class="car-base"></div>
-                        <div class="car-door left-door" id="left-door"></div>
-                        <div class="car-door right-door" id="right-door"></div>
-                        <div class="car-trunk" id="trunk"></div>
-                        <div class="car-engine" id="engine"></div>
-                    </div>
-                </div>
-                <div class="car-info">
-                    <h3>Mercedes-Benz S-Class</h3>
-                    <div class="car-stats">
-                        <div class="car-stat">
-                            <span class="stat-icon">🔋</span>
-                            <span>84%</span>
-                        </div>
-                        <div class="car-stat">
-                            <span class="stat-icon">⛽</span>
-                            <span>65%</span>
-                        </div>
-                        <div class="car-stat">
-                            <span class="stat-icon">🛞</span>
-                            <span>2.4 бар</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Панель быстрого доступа -->
-            <section class="quick-actions">
-                <h2>Быстрое управление</h2>
-                <div class="actions-grid">
-                    <button class="action-btn primary" onclick="sendCommand('start')">
-                        <div class="btn-icon">🚀</div>
-                        <span class="btn-text">Запуск двигателя</span>
-                        <span class="btn-badge">0.7с</span>
-                        <div class="btn-glow"></div>
-                    </button>
-
-                    <button class="action-btn success" onclick="sendCommand('open')">
-                        <div class="btn-icon">🔓</div>
-                        <span class="btn-text">Открыть замки</span>
-                        <span class="btn-badge">0.3с</span>
-                        <div class="btn-glow"></div>
-                    </button>
-
-                    <button class="action-btn warning" onclick="sendCommand('close')">
-                        <div class="btn-icon">🔒</div>
-                        <span class="btn-text">Закрыть замки</span>
-                        <span class="btn-badge">0.3с</span>
-                        <div class="btn-glow"></div>
-                    </button>
-
-                    <button class="action-btn danger" onclick="sendCommand('panic')">
-                        <div class="btn-icon">🚨</div>
-                        <span class="btn-text">Тревога</span>
-                        <span class="btn-badge">0.1с</span>
-                        <div class="btn-glow"></div>
-                    </button>
-                </div>
-            </section>
-
-            <!-- Расширенное управление -->
-            <section class="advanced-controls">
-                <h2>Расширенные функции</h2>
-                <div class="controls-grid">
-                    <button class="control-card" onclick="sendCommand('status')">
-                        <div class="card-icon">📊</div>
-                        <h4>Статус системы</h4>
-                        <p>Полная диагностика</p>
-                        <div class="card-badge">0.3с</div>
-                    </button>
-
-                    <button class="control-card" onclick="sendCommand('trunk')">
-                        <div class="card-icon">🚗</div>
-                        <h4>Багажник</h4>
-                        <p>Дистанционное открытие</p>
-                        <div class="card-badge">0.7с</div>
-                    </button>
-
-                    <button class="control-card" onclick="sendCommand('sensor')">
-                        <div class="card-icon">🌡️</div>
-                        <h4>Датчики</h4>
-                        <p>Температура и влажность</p>
-                        <div class="card-badge">Real-time</div>
-                    </button>
-
-                    <button class="control-card" onclick="sendCommand('climate')">
-                        <div class="card-icon">❄️</div>
-                        <h4>Климат-контроль</h4>
-                        <p>Предварительный запуск</p>
-                        <div class="card-badge">1.2с</div>
-                    </button>
-                </div>
-            </section>
-
-            <!-- Мониторинг в реальном времени -->
-            <section class="live-monitoring">
-                <div class="section-header">
-                    <h2>Мониторинг в реальном времени</h2>
-                    <div class="live-indicator">
-                        <div class="live-dot"></div>
-                        LIVE
-                    </div>
-                </div>
-                <div class="sensors-grid">
-                    <div class="sensor-card temperature">
-                        <div class="sensor-header">
-                            <span class="sensor-icon">🌡️</span>
-                            <span class="sensor-value" id="temp-value">22°C</span>
-                        </div>
-                        <div class="sensor-graph">
-                            <div class="graph-line"></div>
-                        </div>
-                        <span class="sensor-label">Температура салона</span>
-                    </div>
-
-                    <div class="sensor-card humidity">
-                        <div class="sensor-header">
-                            <span class="sensor-icon">💧</span>
-                            <span class="sensor-value" id="humidity-value">45%</span>
-                        </div>
-                        <div class="sensor-graph">
-                            <div class="graph-line"></div>
-                        </div>
-                        <span class="sensor-label">Влажность</span>
-                    </div>
-
-                    <div class="sensor-card voltage">
-                        <div class="sensor-header">
-                            <span class="sensor-icon">⚡</span>
-                            <span class="sensor-value" id="voltage-value">12.6V</span>
-                        </div>
-                        <div class="sensor-graph">
-                            <div class="graph-line"></div>
-                        </div>
-                        <span class="sensor-label">Напряжение АКБ</span>
-                    </div>
-                </div>
-            </section>
-        </main>
-    </div>
-
-    <script src="app.js"></script>
+    // Эмуляция данных с датчика (в реальности — запрос к ESP32)
+    setInterval(() => {
+      document.getElementById("temp").innerText = (20 + Math.random() * 5).toFixed(1);
+      document.getElementById("humi").innerText = (50 + Math.random() * 10).toFixed(0);
+    }, 3000);
+  </script>
 </body>
 </html>
