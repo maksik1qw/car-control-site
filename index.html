@@ -3,14 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DRIVE SYSTEM</title>
+  <title>TELEDRIVE ULTIMATE</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
-      --primary-red: #ff0000;
-      --primary-white: #ffffff;
-      --dark-bg: #000000;
-      --accent-glow: rgba(255, 0, 0, 0.5);
+      --bg: linear-gradient(135deg, #0a0a0a, #1a1a1a);
+      --card-bg: rgba(25, 25, 25, 0.9);
+      --btn-bg: #2a2a2a;
+      --btn-hover: #363636;
+      --accent: #007aff;
+      --text: #ffffff;
     }
 
     * {
@@ -20,191 +22,127 @@
     }
 
     body {
-      font-family: 'Arial', sans-serif;
-      background: var(--dark-bg);
-      color: white;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+      background: var(--bg);
+      color: var(--text);
       min-height: 100vh;
       overflow: hidden;
     }
 
-    /* Экран загрузки */
+    /* Стили для экрана загрузки */
     .loading-screen {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: #000;
+      background: var(--bg);
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       z-index: 1000;
+      transition: opacity 0.5s ease, transform 0.8s ease;
     }
 
-    /* Контейнер спидометра */
-    .speedometer-container {
+    .loading-screen.hidden {
+      opacity: 0;
+      transform: scale(1.1);
+      pointer-events: none;
+    }
+
+    .speedometer {
       position: relative;
-      width: 300px;
-      height: 300px;
+      width: 280px;
+      height: 280px;
       margin-bottom: 40px;
     }
 
-    /* Внешний круг */
-    .outer-circle {
-      position: absolute;
+    .speedometer-circle {
       width: 100%;
       height: 100%;
-      border: 3px solid transparent;
+      border: 8px solid rgba(255, 255, 255, 0.1);
       border-radius: 50%;
-      transition: border-color 1s ease 0.5s;
+      position: relative;
+      overflow: hidden;
     }
 
-    .outer-circle.active {
-      border-color: var(--primary-white);
-    }
-
-    /* Внутренний круг */
-    .inner-circle {
+    .speedometer-inner {
       position: absolute;
-      top: 20px;
-      left: 20px;
-      right: 20px;
-      bottom: 20px;
-      border: 2px solid transparent;
+      width: 90%;
+      height: 90%;
+      top: 5%;
+      left: 5%;
+      background: var(--bg);
       border-radius: 50%;
-      transition: border-color 1s ease 1s;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
-    .inner-circle.active {
-      border-color: var(--primary-white);
-    }
-
-    /* Красная стрелка */
-    .needle {
+    .speedometer-needle {
       position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 4px;
-      height: 120px;
-      background: var(--primary-red);
-      transform-origin: bottom center;
-      transform: translateX(-50%) rotate(-90deg);
-      border-radius: 2px;
-      opacity: 0;
-      transition: opacity 0.5s ease;
-      box-shadow: 0 0 20px var(--accent-glow);
-      z-index: 3;
-    }
-
-    .needle.active {
-      opacity: 1;
-    }
-
-    .needle::after {
-      content: '';
-      position: absolute;
-      bottom: -8px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 16px;
-      height: 16px;
-      background: var(--primary-red);
-      border-radius: 50%;
-      box-shadow: 0 0 15px var(--accent-glow);
-    }
-
-    /* Шкала спидометра */
-    .scale {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      opacity: 0;
-      transition: opacity 1s ease 1.5s;
-    }
-
-    .scale.active {
-      opacity: 1;
-    }
-
-    .scale-tick {
-      position: absolute;
+      width: 3px;
+      height: 100px;
+      background: linear-gradient(to top, #ff2d55, #ff9500);
       bottom: 50%;
       left: 50%;
-      width: 2px;
-      height: 15px;
-      background: var(--primary-white);
       transform-origin: bottom center;
-      opacity: 0.7;
+      transform: translateX(-50%) rotate(-120deg);
+      border-radius: 4px;
+      box-shadow: 0 0 20px rgba(255, 45, 85, 0.5);
+      transition: transform 2.5s cubic-bezier(0.25, 0.1, 0.25, 1);
     }
 
-    .scale-tick.major {
-      height: 25px;
-      width: 3px;
-      opacity: 1;
+    .speedometer-scale {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+
+    .scale-mark {
+      position: absolute;
+      width: 2px;
+      height: 12px;
+      background: rgba(255, 255, 255, 0.3);
+      top: 10px;
+      left: 50%;
+      transform-origin: bottom center;
     }
 
     .scale-number {
       position: absolute;
-      color: var(--primary-white);
-      font-size: 14px;
-      font-weight: bold;
-      transform: translateX(-50%);
-    }
-
-    /* Центральный дисплей */
-    .center-display {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      text-align: center;
-      z-index: 2;
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.6);
+      transform-origin: center;
     }
 
     .speed-value {
-      font-size: 42px;
-      font-weight: bold;
-      color: var(--primary-red);
-      text-shadow: 0 0 20px var(--accent-glow);
-      margin-bottom: 5px;
-      opacity: 0;
-      transition: opacity 0.5s ease 2s;
-    }
-
-    .speed-value.active {
-      opacity: 1;
+      font-size: 48px;
+      font-weight: 800;
+      background: linear-gradient(90deg, #ff2d55, #ff9500);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 20px rgba(255, 45, 85, 0.3);
     }
 
     .speed-unit {
       font-size: 16px;
-      color: var(--primary-white);
       opacity: 0.7;
-      opacity: 0;
-      transition: opacity 0.5s ease 2.2s;
-    }
-
-    .speed-unit.active {
-      opacity: 1;
+      margin-top: -10px;
     }
 
     .loading-text {
-      font-size: 16px;
-      color: var(--primary-white);
+      font-size: 18px;
+      opacity: 0.8;
+      letter-spacing: 2px;
       text-transform: uppercase;
-      letter-spacing: 3px;
-      opacity: 0;
-      transition: opacity 0.5s ease;
       margin-top: 20px;
+      animation: pulse 2s infinite;
     }
 
-    .loading-text.active {
-      opacity: 1;
-    }
-
-    /* Вспышка */
     .flash {
       position: fixed;
       top: 0;
@@ -212,118 +150,167 @@
       width: 100%;
       height: 100%;
       background: white;
-      z-index: 999;
+      z-index: 9999;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.3s ease;
+    }
+
+    .flash.active {
+      animation: flash 0.3s ease;
     }
 
     /* Основное приложение */
     .app-content {
       opacity: 0;
-      background: #000;
+      transform: translateY(20px);
+      transition: all 0.8s ease;
+      padding: 24px 20px;
       min-height: 100vh;
-      padding: 20px;
-      transform: scale(0.9);
-      transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
     .app-content.visible {
       opacity: 1;
-      transform: scale(1);
+      transform: translateY(0);
     }
 
-    .app-header {
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    /* Анимация появления элементов приложения */
+    .app-content.visible > * {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.6s ease forwards;
+    }
+    .app-content.visible .header { animation-delay: 0.2s; }
+    .app-content.visible .btn:nth-child(1) { animation-delay: 0.3s; }
+    .app-content.visible .btn:nth-child(2) { animation-delay: 0.4s; }
+    .app-content.visible .btn:nth-child(3) { animation-delay: 0.5s; }
+    .app-content.visible .btn:nth-child(4) { animation-delay: 0.6s; }
+    .app-content.visible .btn:nth-child(5) { animation-delay: 0.7s; }
+    .app-content.visible .status-card { animation-delay: 0.8s; }
+    .app-content.visible .footer { animation-delay: 0.9s; }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .header {
       text-align: center;
       margin-bottom: 40px;
-      padding-top: 30px;
     }
 
-    .app-title {
+    .logo {
       font-size: 36px;
-      font-weight: bold;
-      background: linear-gradient(90deg, #ff0000, #ff6b6b);
+      font-weight: 800;
+      letter-spacing: -1px;
+      background: linear-gradient(90deg, #ff2d55, #5856d6, #34c759);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      margin-bottom: 10px;
-      text-transform: uppercase;
-      letter-spacing: 2px;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
     }
 
-    .app-subtitle {
-      font-size: 14px;
-      color: #666;
-      letter-spacing: 1px;
+    .subtitle {
+      font-size: 16px;
+      opacity: 0.7;
+      margin-top: 8px;
+      letter-spacing: 0.5px;
     }
 
-    .control-panel {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
-      margin-bottom: 30px;
-    }
-
-    .control-btn {
-      background: #1a1a1a;
-      border: 2px solid #333;
-      border-radius: 12px;
-      padding: 25px 15px;
-      color: white;
-      text-align: center;
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 22px 24px;
+      margin: 14px 0;
+      background: var(--btn-bg);
+      border: none;
+      border-radius: 20px;
+      color: var(--text);
+      font-size: 18px;
+      font-weight: 500;
+      text-align: left;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
       position: relative;
       overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
 
-    .control-btn:active {
-      background: #333;
-      border-color: #ff0000;
-      transform: scale(0.95);
-    }
-
-    .control-btn::before {
+    .btn:before {
       content: '';
       position: absolute;
       top: 0;
       left: -100%;
       width: 100%;
       height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 0, 0, 0.1), transparent);
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
       transition: 0.5s;
     }
 
-    .control-btn:active::before {
+    .btn:active {
+      background: var(--btn-hover);
+      transform: translateY(2px);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+
+    .btn:hover:before {
       left: 100%;
     }
 
+    .btn-loading {
+      position: relative;
+      color: transparent;
+      pointer-events: none;
+    }
+    .btn-loading::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      top: 50%;
+      left: 50%;
+      margin-left: -10px;
+      margin-top: -10px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: var(--text);
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
     .btn-icon {
-      font-size: 28px;
-      margin-bottom: 10px;
-      display: block;
+      display: inline-block;
+      width: 28px;
+      margin-right: 16px;
+      font-size: 22px;
+      vertical-align: middle;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
     }
 
-    .btn-label {
-      font-size: 14px;
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-
-    .btn-time {
-      font-size: 11px;
-      color: #ff0000;
+    .status-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(25px);
+      padding: 28px;
+      border-radius: 24px;
+      margin: 40px 0;
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
     }
 
     .status-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 15px;
-      background: #1a1a1a;
-      border-radius: 12px;
-      padding: 20px;
-      border: 2px solid #333;
-      margin-bottom: 25px;
+      gap: 24px;
+      margin-bottom: 24px;
     }
 
     .status-item {
@@ -331,82 +318,121 @@
     }
 
     .status-label {
-      font-size: 11px;
-      color: #666;
+      font-size: 12px;
+      opacity: 0.6;
       text-transform: uppercase;
       letter-spacing: 1px;
       margin-bottom: 8px;
     }
 
     .status-value {
-      font-size: 20px;
-      font-weight: bold;
-      color: #ff0000;
-      text-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      background: linear-gradient(90deg, #ff9500, #ff2d55);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
-    .system-status {
+    .status-row {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      background: #1a1a1a;
-      border-radius: 8px;
-      padding: 15px 20px;
-      border: 2px solid #333;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255,255,255,0.08);
     }
 
     .status-indicator {
       display: flex;
       align-items: center;
-      font-size: 12px;
-      color: #666;
+      font-size: 14px;
     }
 
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      background: #00ff00;
+    .dot {
+      width: 10px;
+      height: 10px;
+      background: #30d158;
       border-radius: 50%;
       margin-right: 10px;
-      box-shadow: 0 0 10px #00ff00;
+      box-shadow: 0 0 10px #30d158;
     }
 
-    .app-footer {
+    .footer {
       text-align: center;
-      margin-top: 30px;
-      color: #333;
-      font-size: 11px;
-      letter-spacing: 1px;
+      opacity: 0.4;
+      font-size: 12px;
+      margin-top: 44px;
+      letter-spacing: 0.5px;
     }
 
-    /* Анимации */
-    @keyframes glow {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.7; }
+    .pulse {
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.7; transform: scale(1.02); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes flash {
+      0% { opacity: 0; }
+      50% { opacity: 0.8; }
+      100% { opacity: 0; }
     }
 
     .glow {
-      animation: glow 2s ease-in-out infinite;
+      text-shadow: 0 0 10px rgba(94, 234, 212, 0.8);
+    }
+
+    /* Адаптивность */
+    @media (max-width: 400px) {
+      .speedometer {
+        width: 220px;
+        height: 220px;
+      }
+      .speed-value {
+        font-size: 36px;
+      }
+      .app-content {
+        padding: 16px 12px;
+      }
+      .btn {
+        padding: 18px 20px;
+        font-size: 16px;
+        border-radius: 16px;
+        margin: 10px 0;
+      }
+      .status-value {
+        font-size: 22px;
+      }
+      .status-card {
+        padding: 20px;
+        border-radius: 20px;
+        margin: 30px 0;
+      }
+      .logo {
+        font-size: 32px;
+      }
     }
   </style>
 </head>
 <body>
   <!-- Экран загрузки -->
   <div class="loading-screen" id="loadingScreen">
-    <div class="speedometer-container">
-      <div class="outer-circle" id="outerCircle"></div>
-      <div class="inner-circle" id="innerCircle"></div>
-      
-      <div class="scale" id="scale"></div>
-      <div class="needle" id="needle"></div>
-      
-      <div class="center-display">
-        <div class="speed-value" id="speedValue">0</div>
-        <div class="speed-unit" id="speedUnit">km/h</div>
+    <div class="speedometer">
+      <div class="speedometer-circle">
+        <div class="speedometer-scale" id="speedometerScale"></div>
+        <div class="speedometer-needle" id="needle"></div>
+        <div class="speedometer-inner">
+          <div>
+            <div class="speed-value" id="speedValue">0</div>
+            <div class="speed-unit">km/h</div>
+          </div>
+        </div>
       </div>
     </div>
-    
-    <div class="loading-text" id="loadingText">SYSTEM BOOT</div>
+    <div class="loading-text">TELEDRIVE BOOT</div>
   </div>
 
   <!-- Вспышка -->
@@ -414,179 +440,174 @@
 
   <!-- Основное приложение -->
   <div class="app-content" id="appContent">
-    <div class="app-header">
-      <div class="app-title">Drive Control</div>
-      <div class="app-subtitle">Advanced Vehicle Management System</div>
-    </div>
+    <div class="container">
+      <div class="header">
+        <div class="logo glow">TELEDRIVE</div>
+        <div class="subtitle">Умное управление автомобилем</div>
+      </div>
 
-    <div class="control-panel">
-      <div class="control-btn" onclick="sendCommand('/start', this)">
-        <span class="btn-icon">🚀</span>
-        <div class="btn-label">ENGINE START</div>
-        <div class="btn-time">0.7s</div>
-      </div>
-      
-      <div class="control-btn" onclick="sendCommand('/lock', this)">
-        <span class="btn-icon">🔒</span>
-        <div class="btn-label">DOOR LOCK</div>
-        <div class="btn-time">0.3s</div>
-      </div>
-      
-      <div class="control-btn" onclick="sendCommand('/unlock', this)">
-        <span class="btn-icon">🔓</span>
-        <div class="btn-label">DOOR UNLOCK</div>
-        <div class="btn-time">0.3s</div>
-      </div>
-      
-      <div class="control-btn" onclick="sendCommand('/trunk', this)">
-        <span class="btn-icon">📦</span>
-        <div class="btn-label">TRUNK OPEN</div>
-        <div class="btn-time">0.5s</div>
-      </div>
-    </div>
+      <button class="btn" onclick="sendCommand('/start', this)">
+        <span class="btn-icon">🚀</span> ЗАПУСК ДВИГАТЕЛЯ <span style="float:right">0.7с</span>
+      </button>
+      <button class="btn" onclick="sendCommand('/open', this)">
+        <span class="btn-icon">🔓</span> ОТКРЫТЬ ЗАМОК <span style="float:right">0.3с</span>
+      </button>
+      <button class="btn" onclick="sendCommand('/close', this)">
+        <span class="btn-icon">🔒</span> ЗАКРЫТЬ ЗАМОК <span style="float:right">0.3с</span>
+      </button>
+      <button class="btn" onclick="sendCommand('/status', this)">
+        <span class="btn-icon">📊</span> СТАТУС СИСТЕМЫ <span style="float:right">0.3с</span>
+      </button>
+      <button class="btn" onclick="sendCommand('/trunk', this)">
+        <span class="btn-icon">🚗</span> ОТКРЫТЬ БАГАЖНИК <span style="float:right">0.7с</span>
+      </button>
 
-    <div class="status-grid">
-      <div class="status-item">
-        <div class="status-label">TEMPERATURE</div>
-        <div class="status-value glow" id="temp">22°C</div>
+      <div class="status-card">
+        <div class="status-grid">
+          <div class="status-item">
+            <div class="status-label">Температура</div>
+            <div class="status-value pulse" id="temp">24.5°C</div>
+          </div>
+          <div class="status-item">
+            <div class="status-label">Влажность</div>
+            <div class="status-value pulse" id="humi">58%</div>
+          </div>
+        </div>
+        <div class="status-row">
+          <div class="status-indicator">
+            <div class="dot"></div>
+            <div>ESP32 Online</div>
+          </div>
+          <div class="status-indicator">
+            <div class="dot"></div>
+            <div>Wi-Fi Strong</div>
+          </div>
+        </div>
       </div>
-      <div class="status-item">
-        <div class="status-label">HUMIDITY</div>
-        <div class="status-value" id="humi">48%</div>
-      </div>
-      <div class="status-item">
-        <div class="status-label">VOLTAGE</div>
-        <div class="status-value" id="voltage">12.4V</div>
-      </div>
-      <div class="status-item">
-        <div class="status-label">FUEL LEVEL</div>
-        <div class="status-value" id="fuel">87%</div>
-      </div>
-    </div>
 
-    <div class="system-status">
-      <div class="status-indicator">
-        <div class="status-dot"></div>
-        <div>VEHICLE ONLINE</div>
-      </div>
-      <div class="status-indicator">
-        <div class="status-dot"></div>
-        <div>SYSTEM READY</div>
-      </div>
+      <div class="footer">TELEDRIVE ULTIMATE • Цифровой ключ от твоей жизни</div>
     </div>
-
-    <div class="app-footer">DRIVE SYSTEM v2.0 • SECURE CONNECTION</div>
   </div>
 
   <script>
     const tg = window.Telegram.WebApp;
     tg.expand();
     tg.ready();
+    tg.setHeaderColor('secondary_bg_color');
 
     // Создание шкалы спидометра
-    function createScale() {
-      const scale = document.getElementById('scale');
-      
-      // Создание делений и цифр
+    function createSpeedometerScale() {
+      const scale = document.getElementById('speedometerScale');
       for (let i = 0; i <= 250; i += 10) {
-        const tick = document.createElement('div');
-        tick.className = i % 50 === 0 ? 'scale-tick major' : 'scale-tick';
-        tick.style.transform = `rotate(${i * 180 / 250 - 90}deg)`;
-        scale.appendChild(tick);
+        const mark = document.createElement('div');
+        mark.className = 'scale-mark';
+        mark.style.transform = `translateX(-50%) rotate(${120 + (i / 250) * 240}deg)`;
         
-        // Цифры каждые 50 единиц
         if (i % 50 === 0) {
+          mark.style.height = '20px';
+          mark.style.background = 'rgba(255, 255, 255, 0.6)';
+          
           const number = document.createElement('div');
           number.className = 'scale-number';
           number.textContent = i;
-          number.style.left = `${50 + 40 * Math.sin(i * Math.PI / 250)}%`;
-          number.style.bottom = `${50 - 40 * Math.cos(i * Math.PI / 250)}%`;
+          number.style.transform = `rotate(${-(120 + (i / 250) * 240)}deg)`;
+          number.style.top = '35px';
+          number.style.left = '50%';
+          number.style.transform += ' translateX(-50%)';
           scale.appendChild(number);
         }
+        
+        scale.appendChild(mark);
       }
     }
 
-    // Анимация загрузки
+    // Анимация загрузки спидометра
     function startLoadingAnimation() {
-      const elements = [
-        { id: 'needle', delay: 0 },
-        { id: 'outerCircle', delay: 500 },
-        { id: 'innerCircle', delay: 1000 },
-        { id: 'scale', delay: 1500 },
-        { id: 'speedValue', delay: 2000 },
-        { id: 'speedUnit', delay: 2200 },
-        { id: 'loadingText', delay: 500 }
-      ];
-
-      // Активация элементов с задержкой
-      elements.forEach(element => {
-        setTimeout(() => {
-          document.getElementById(element.id).classList.add('active');
-        }, element.delay);
-      });
-
-      // Анимация скорости
-      const speedValue = document.getElementById('speedValue');
       const needle = document.getElementById('needle');
+      const speedValue = document.getElementById('speedValue');
+      const loadingScreen = document.getElementById('loadingScreen');
+      const flash = document.getElementById('flash');
+      const appContent = document.getElementById('appContent');
+      
       let speed = 0;
-      const duration = 2000;
-      const startTime = Date.now() + 2500; // Начинаем после появления всех элементов
-
-      function animateSpeed() {
-        const elapsed = Date.now() - startTime;
-        if (elapsed < 0) {
-          requestAnimationFrame(animateSpeed);
-          return;
-        }
-
-        const progress = Math.min(elapsed / duration, 1);
-        const easeProgress = 1 - Math.pow(1 - progress, 3); // Ease-out эффект
-        
-        speed = Math.round(easeProgress * 250);
-        speedValue.textContent = speed;
-        needle.style.transform = `translateX(-50%) rotate(${speed * 180 / 250 - 90}deg)`;
-
-        if (progress < 1) {
-          requestAnimationFrame(animateSpeed);
-        } else {
+      const targetSpeed = 250;
+      const duration = 2500; // 2.5 секунды
+      const interval = 20;
+      const steps = duration / interval;
+      const increment = targetSpeed / steps;
+      
+      const timer = setInterval(() => {
+        speed += increment;
+        if (speed >= targetSpeed) {
+          speed = targetSpeed;
+          clearInterval(timer);
+          
           // Завершение анимации
           setTimeout(() => {
-            // Яркая вспышка
-            const flash = document.getElementById('flash');
-            flash.style.opacity = '1';
+            // Вспышка
+            flash.classList.add('active');
             
             setTimeout(() => {
-              // Показ основного приложения
-              document.getElementById('loadingScreen').style.display = 'none';
-              document.getElementById('appContent').classList.add('visible');
+              // Скрываем экран загрузки и показываем приложение
+              loadingScreen.classList.add('hidden');
+              flash.classList.remove('active');
               
               setTimeout(() => {
-                flash.style.opacity = '0';
+                appContent.classList.add('visible');
               }, 300);
-            }, 200);
+              
+            }, 300);
           }, 500);
         }
-      }
-
-      setTimeout(animateSpeed, 2500);
+        
+        // Обновляем положение стрелки и значение скорости
+        const rotation = -120 + (speed / targetSpeed) * 240;
+        needle.style.transform = `translateX(-50%) rotate(${rotation}deg)`;
+        speedValue.textContent = Math.round(speed);
+        
+      }, interval);
     }
 
     // Инициализация
     document.addEventListener('DOMContentLoaded', () => {
-      createScale();
+      createSpeedometerScale();
       setTimeout(startLoadingAnimation, 500);
     });
 
-    // Функции управления
+    // Функции основного приложения
     function sendCommand(cmd, buttonElement) {
-      buttonElement.style.borderColor = '#ff0000';
-      buttonElement.style.background = 'rgba(255, 0, 0, 0.1)';
+      buttonElement.disabled = true;
+      buttonElement.classList.add('btn-loading');
+
       tg.sendData(cmd);
 
       setTimeout(() => {
-        buttonElement.style.borderColor = '';
-        buttonElement.style.background = '';
-      }, 700);
+        buttonElement.disabled = false;
+        buttonElement.classList.remove('btn-loading');
+
+        if (cmd === '/start' || cmd === '/status') {
+          updateSensorData();
+        }
+      }, 1000);
+    }
+
+    function updateSensorData() {
+      const tempElement = document.getElementById("temp");
+      const humiElement = document.getElementById("humi");
+      
+      tempElement.classList.add('pulse');
+      humiElement.classList.add('pulse');
+      
+      setTimeout(() => {
+        tempElement.classList.remove('pulse');
+        humiElement.classList.remove('pulse');
+        
+        const currentTemp = parseFloat(tempElement.innerText);
+        const currentHumi = parseFloat(humiElement.innerText);
+        
+        tempElement.innerText = (currentTemp + (Math.random() - 0.5)).toFixed(1) + "°C";
+        humiElement.innerText = Math.max(40, Math.min(80, currentHumi + (Math.random() - 0.5) * 10)).toFixed(0) + "%";
+      }, 600);
     }
   </script>
 </body>
