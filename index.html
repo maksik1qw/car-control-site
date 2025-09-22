@@ -9,8 +9,8 @@
     :root {
       --bg: linear-gradient(135deg, #0a0a0a, #1a1a1a);
       --card-bg: rgba(25, 25, 25, 0.9);
-      --btn-bg: #1e1e1e;
-      --btn-hover: #2a2a2a;
+      --btn-bg: #2a2a2a;
+      --btn-hover: #363636;
       --accent: #007aff;
       --text: #ffffff;
     }
@@ -32,6 +32,28 @@
     .container {
       max-width: 500px;
       margin: 0 auto;
+    }
+
+    /* Анимация появления элементов */
+    .container > * {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.6s ease forwards;
+    }
+    .header { animation-delay: 0.1s; }
+    .btn:nth-child(1) { animation-delay: 0.2s; }
+    .btn:nth-child(2) { animation-delay: 0.3s; }
+    .btn:nth-child(3) { animation-delay: 0.4s; }
+    .btn:nth-child(4) { animation-delay: 0.5s; }
+    .btn:nth-child(5) { animation-delay: 0.6s; }
+    .status-card { animation-delay: 0.7s; }
+    .footer { animation-delay: 0.8s; }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .header {
@@ -95,6 +117,31 @@
 
     .btn:hover:before {
       left: 100%;
+    }
+
+    /* Анимация загрузки для кнопок */
+    .btn-loading {
+      position: relative;
+      color: transparent;
+      pointer-events: none;
+    }
+    .btn-loading::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      top: 50%;
+      left: 50%;
+      margin-left: -10px;
+      margin-top: -10px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: var(--text);
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
 
     .btn-icon {
@@ -189,6 +236,44 @@
     .glow {
       text-shadow: 0 0 10px rgba(94, 234, 212, 0.8);
     }
+
+    /* Адаптивность для мобильных устройств */
+    @media (max-width: 400px) {
+      body {
+        padding: 16px 12px;
+      }
+      .btn {
+        padding: 18px 20px;
+        font-size: 16px;
+        border-radius: 16px;
+        margin: 10px 0;
+      }
+      .status-value {
+        font-size: 22px;
+      }
+      .status-card {
+        padding: 20px;
+        border-radius: 20px;
+        margin: 30px 0;
+      }
+      .logo {
+        font-size: 32px;
+      }
+    }
+
+    @media (max-height: 500px) and (orientation: landscape) {
+      .header {
+        margin-bottom: 20px;
+      }
+      .status-card {
+        margin: 20px 0;
+        padding: 20px;
+      }
+      .btn {
+        padding: 16px 20px;
+        margin: 8px 0;
+      }
+    }
   </style>
 </head>
 <body>
@@ -198,19 +283,19 @@
       <div class="subtitle">Умное управление автомобилем</div>
     </div>
 
-    <button class="btn" onclick="sendCommand('/start')">
+    <button class="btn" onclick="sendCommand('/start', this)">
       <span class="btn-icon">🚀</span> ЗАПУСК ДВИГАТЕЛЯ <span style="float:right">0.7с</span>
     </button>
-    <button class="btn" onclick="sendCommand('/open')">
+    <button class="btn" onclick="sendCommand('/open', this)">
       <span class="btn-icon">🔓</span> ОТКРЫТЬ ЗАМОК <span style="float:right">0.3с</span>
     </button>
-    <button class="btn" onclick="sendCommand('/close')">
+    <button class="btn" onclick="sendCommand('/close', this)">
       <span class="btn-icon">🔒</span> ЗАКРЫТЬ ЗАМОК <span style="float:right">0.3с</span>
     </button>
-    <button class="btn" onclick="sendCommand('/status')">
+    <button class="btn" onclick="sendCommand('/status', this)">
       <span class="btn-icon">📊</span> СТАТУС СИСТЕМЫ <span style="float:right">0.3с</span>
     </button>
-    <button class="btn" onclick="sendCommand('/trunk')">
+    <button class="btn" onclick="sendCommand('/trunk', this)">
       <span class="btn-icon">🚗</span> ОТКРЫТЬ БАГАЖНИК <span style="float:right">0.7с</span>
     </button>
 
@@ -244,21 +329,55 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
     tg.ready();
+    tg.setHeaderColor('secondary_bg_color');
 
-    function sendCommand(cmd) {
+    function sendCommand(cmd, buttonElement) {
+      // Блокируем кнопку и добавляем индикатор загрузки
+      buttonElement.disabled = true;
+      buttonElement.classList.add('btn-loading');
+
+      // Отправляем команду в Telegram
       tg.sendData(cmd);
-      
-      // Анимация статуса
-      document.getElementById("temp").classList.add('pulse');
-      document.getElementById("humi").classList.add('pulse');
-      
+
+      // Имитация обработки команды
       setTimeout(() => {
-        document.getElementById("temp").classList.remove('pulse');
-        document.getElementById("humi").classList.remove('pulse');
-        document.getElementById("temp").innerText = (20 + Math.random() * 5).toFixed(1) + "°C";
-        document.getElementById("humi").innerText = (50 + Math.random() * 10).toFixed(0) + "%";
+        // Возвращаем кнопку в нормальное состояние
+        buttonElement.disabled = false;
+        buttonElement.classList.remove('btn-loading');
+
+        // Обновляем данные статуса только для релевантных команд
+        if (cmd === '/start' || cmd === '/status') {
+          updateSensorData();
+        }
       }, 1000);
     }
+
+    function updateSensorData() {
+      const tempElement = document.getElementById("temp");
+      const humiElement = document.getElementById("humi");
+      
+      // Добавляем анимацию пульсации
+      tempElement.classList.add('pulse');
+      humiElement.classList.add('pulse');
+      
+      setTimeout(() => {
+        // Убираем анимацию
+        tempElement.classList.remove('pulse');
+        humiElement.classList.remove('pulse');
+        
+        // Обновляем значения более правдоподобно
+        const currentTemp = parseFloat(tempElement.innerText);
+        const currentHumi = parseFloat(humiElement.innerText);
+        
+        tempElement.innerText = (currentTemp + (Math.random() - 0.5)).toFixed(1) + "°C";
+        humiElement.innerText = Math.max(40, Math.min(80, currentHumi + (Math.random() - 0.5) * 10)).toFixed(0) + "%";
+      }, 600);
+    }
+
+    // Обработка данных от бота (заглушка для демо)
+    tg.onEvent('viewportChanged', (e) => {
+      console.log('Viewport changed:', e);
+    });
   </script>
 </body>
 </html>
