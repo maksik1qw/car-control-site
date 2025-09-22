@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TELEDRIVE — Умная сигнализация</title>
+  <title>TELEDRIVE ULTIMATE</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     body {
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+      background: #000;
+      color: #fff;
       padding: 20px;
-      background: linear-gradient(135deg, #1e3c72, #2a5298);
-      color: white;
       margin: 0;
     }
     .container {
@@ -18,83 +18,103 @@
       margin: 0 auto;
     }
     h1 {
+      font-size: 28px;
+      font-weight: 600;
       text-align: center;
-      font-size: 24px;
       margin: 20px 0;
+    }
+    .subtitle {
+      text-align: center;
+      opacity: 0.7;
+      font-size: 16px;
+      margin-bottom: 30px;
     }
     .btn {
       display: block;
       width: 100%;
-      padding: 16px;
-      margin: 12px 0;
+      padding: 18px;
+      margin: 10px 0;
+      background: #1c1c1e;
       border: none;
-      border-radius: 12px;
+      border-radius: 16px;
+      color: #fff;
       font-size: 18px;
-      font-weight: bold;
+      font-weight: 500;
+      text-align: center;
       cursor: pointer;
-      transition: transform 0.1s, opacity 0.1s;
+      transition: background 0.3s, transform 0.1s;
     }
     .btn:active {
+      background: #2c2c2e;
       transform: scale(0.98);
-      opacity: 0.9;
     }
-    .btn-start { background: #ff5a5f; color: white; }
-    .btn-open { background: #00c853; color: white; }
-    .btn-close { background: #ffbb33; color: black; }
-    .btn-status { background: #33b5e5; color: white; }
-    .btn-trunk { background: #aa66cc; color: white; }
-    .status-box {
-      background: rgba(255,255,255,0.1);
+    .status {
+      background: #1c1c1e;
       padding: 20px;
-      border-radius: 12px;
-      margin: 20px 0;
+      border-radius: 16px;
+      margin: 30px 0;
       text-align: center;
-      backdrop-filter: blur(10px);
     }
-    .popup {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: white;
-      color: black;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-      z-index: 1000;
-      display: none;
+    .status-row {
+      display: flex;
+      justify-content: space-around;
+      margin: 10px 0;
     }
-    .overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.5);
-      z-index: 999;
-      display: none;
+    .status-item {
+      text-align: center;
+    }
+    .status-label {
+      font-size: 12px;
+      opacity: 0.7;
+    }
+    .status-value {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    .footer {
+      text-align: center;
+      opacity: 0.5;
+      font-size: 12px;
+      margin-top: 40px;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>🚗 TELEDRIVE</h1>
-    <p style="text-align:center; opacity:0.9;">Управляй автомобилем из любой точки мира</p>
+    <h1>🚗 TELEDRIVE ULTIMATE</h1>
+    <p class="subtitle">Управляй автомобилем из любой точки мира</p>
 
-    <button class="btn btn-start" onclick="sendCommand('/start')">🚀 ЗАПУСК ДВИГАТЕЛЯ (0.7с)</button>
-    <button class="btn btn-open" onclick="sendCommand('/open')">🔓 ОТКРЫТЬ ЗАМОК (0.3с)</button>
-    <button class="btn btn-close" onclick="sendCommand('/close')">🔒 ЗАКРЫТЬ ЗАМОК (0.3с)</button>
-    <button class="btn btn-status" onclick="sendCommand('/status')">📊 СТАТУС (0.3с)</button>
-    <button class="btn btn-trunk" onclick="sendCommand('/trunk')">🚗 ОТКРЫТЬ БАГАЖНИК (0.7с)</button>
+    <button class="btn" onclick="sendCommand('/start')">🚀 ЗАПУСК ДВИГАТЕЛЯ (0.7с)</button>
+    <button class="btn" onclick="sendCommand('/open')">🔓 ОТКРЫТЬ ЗАМОК (0.3с)</button>
+    <button class="btn" onclick="sendCommand('/close')">🔒 ЗАКРЫТЬ ЗАМОК (0.3с)</button>
+    <button class="btn" onclick="sendCommand('/status')">📊 СТАТУС СИСТЕМЫ (0.3с)</button>
+    <button class="btn" onclick="sendCommand('/trunk')">🚗 ОТКРЫТЬ БАГАЖНИК (0.7с)</button>
 
-    <div class="status-box">
-      <div>🌡️ Температура: <span id="temp">—</span>°C</div>
-      <div>💧 Влажность: <span id="humi">—</span>%</div>
+    <div class="status">
+      <div class="status-row">
+        <div class="status-item">
+          <div class="status-label">🌡️ Температура</div>
+          <div class="status-value" id="temp">24.5°C</div>
+        </div>
+        <div class="status-item">
+          <div class="status-label">💧 Влажность</div>
+          <div class="status-value" id="humi">58%</div>
+        </div>
+      </div>
+      <div class="status-row">
+        <div class="status-item">
+          <div class="status-label">🔋 ESP32</div>
+          <div class="status-value">Online</div>
+        </div>
+        <div class="status-item">
+          <div class="status-label">📶 Wi-Fi</div>
+          <div class="status-value">Strong</div>
+        </div>
+      </div>
     </div>
-  </div>
 
-  <div class="overlay" id="overlay"></div>
-  <div class="popup" id="popup"></div>
+    <p class="footer">TELEDRIVE ULTIMATE — цифровой ключ от твоей жизни</p>
+  </div>
 
   <script>
     const tg = window.Telegram.WebApp;
@@ -103,26 +123,12 @@
 
     function sendCommand(cmd) {
       tg.sendData(cmd);
-      showPopup("✅ Команда отправлена: " + cmd);
-    }
-
-    function showPopup(text) {
-      const popup = document.getElementById("popup");
-      const overlay = document.getElementById("overlay");
-      popup.innerText = text;
-      popup.style.display = "block";
-      overlay.style.display = "block";
+      // Эмуляция обновления статуса
       setTimeout(() => {
-        popup.style.display = "none";
-        overlay.style.display = "none";
-      }, 2000);
+        document.getElementById("temp").innerText = (20 + Math.random() * 5).toFixed(1) + "°C";
+        document.getElementById("humi").innerText = (50 + Math.random() * 10).toFixed(0) + "%";
+      }, 1000);
     }
-
-    // Эмуляция данных с датчика (в реальности — запрос к ESP32)
-    setInterval(() => {
-      document.getElementById("temp").innerText = (20 + Math.random() * 5).toFixed(1);
-      document.getElementById("humi").innerText = (50 + Math.random() * 10).toFixed(0);
-    }, 3000);
   </script>
 </body>
 </html>
