@@ -29,6 +29,99 @@
       overflow: hidden;
     }
 
+    /* Стиль для кнопок */
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 22px 24px;
+      margin: 14px 0;
+      background: var(--btn-bg);
+      border: none;
+      border-radius: 20px;
+      color: var(--text);
+      font-size: 18px;
+      font-weight: 500;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      position: relative;
+    }
+
+    .btn:hover {
+      background: var(--btn-hover);
+    }
+  </style>
+</head>
+<body>
+  <!-- Основное приложение -->
+  <div id="appContent">
+    <div class="container">
+      <div class="header">
+        <div class="logo">TELEDRIVE</div>
+        <div class="subtitle">Умное управление автомобилем</div>
+      </div>
+
+      <button class="btn" onclick="sendCommand('/start')">
+        🚀 ЗАПУСК ДВИГАТЕЛЯ
+      </button>
+      <button class="btn" onclick="sendCommand('/open')">
+        🔓 ОТКРЫТЬ ЗАМОК
+      </button>
+      <button class="btn" onclick="sendCommand('/close')">
+        🔒 ЗАКРЫТЬ ЗАМОК
+      </button>
+      <button class="btn" onclick="sendCommand('/status')">
+        📊 СТАТУС СИСТЕМЫ
+      </button>
+      <button class="btn" onclick="sendCommand('/trunk')">
+        🚗 ОТКРЫТЬ БАГАЖНИК
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+    tg.ready();
+
+    // Функция для отправки команды в ESP32 через WebApp
+    function sendCommand(cmd) {
+      tg.sendData(cmd);
+    }
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TELEDRIVE ULTIMATE</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root {
+      --bg: linear-gradient(135deg, #0a0a0a, #1a1a1a);
+      --card-bg: rgba(25, 25, 25, 0.9);
+      --btn-bg: #2a2a2a;
+      --btn-hover: #363636;
+      --accent: #007aff;
+      --text: #ffffff;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
     .app-content {
       opacity: 0;
       transform: translateY(20px);
