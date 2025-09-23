@@ -79,10 +79,11 @@
 
   <script>
     const tg = window.Telegram.WebApp;
-    tg.expand();
-    tg.ready();
+    tg.expand();  // Разворачивает WebApp
+    tg.ready();   // Готово к использованию
+    tg.setHeaderColor('secondary_bg_color'); // Можно настроить цвет заголовка
 
-    // Функция для отправки команды в ESP32 через WebApp
+    // Отправка команды на ESP32
     function sendCommand(cmd) {
       console.log("Отправляем команду:", cmd);  // Логируем команду
       tg.sendData(cmd);  // Отправляем команду в ESP32
