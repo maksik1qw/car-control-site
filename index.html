@@ -79,14 +79,14 @@
 
   <script>
     const tg = window.Telegram.WebApp;
-    tg.expand();  // Разворачивает WebApp
+    tg.expand();  // Разворачиваем WebApp
     tg.ready();   // Готово к использованию
-    tg.setHeaderColor('secondary_bg_color'); // Можно настроить цвет заголовка
+    tg.setHeaderColor('secondary_bg_color'); // Настройка цвета
 
-    // Отправка команды на ESP32
+    // Функция для отправки команды в ESP32 через WebApp
     function sendCommand(cmd) {
       console.log("Отправляем команду:", cmd);  // Логируем команду
-      tg.sendData(cmd);  // Отправляем команду в ESP32
+      tg.sendData(cmd);  // Отправка команды на ESP32
     }
   </script>
 </body>
